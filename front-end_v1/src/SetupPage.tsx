@@ -5,13 +5,16 @@ const Setup = () => {
   const [monthlyBudget, setMonthlyBudget] = useState('');
   const [numCategories, setNumCategories] = useState('');
   const navigate = useNavigate();
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+  localStorage.setItem('monthlyBudget', monthlyBudget);
+    localStorage.setItem('numCategories', numCategories);
+
     console.log('Monthly Budget:', monthlyBudget);
     console.log('Number of Categories:', numCategories);
-    navigate('/budget');
+    navigate('/setuptwo');
     setMonthlyBudget('');
     setNumCategories('');
 
