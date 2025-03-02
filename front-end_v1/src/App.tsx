@@ -5,12 +5,16 @@ import BudgetPage from './BudgetPage';
 import SignUp from './SignupPage';
 import SignIn from './SigninPage';
 import Setup from './SetupPage';
+import SetupStepTwo from './SetupPage2';
+import SetupStepThree from './SetupPage3';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/setup" element={<Setup />} />
+        <Route path="/setuptwo" element ={<SetupStepTwo />}/>
+        <Route path="/setupthree" element ={<SetupStepThree />}/>
         <Route path="/signUp" element={<SignUp />} />
         <Route path="/signIn" element={<SignIn />} />
         <Route path="/budget" element={<BudgetPage />} />
