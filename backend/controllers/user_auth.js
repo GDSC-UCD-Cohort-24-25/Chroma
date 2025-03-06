@@ -34,9 +34,9 @@ export const login = async (req, res) => {
             }
         }
         const accessToken = generateAccessToken(payload);   // short lived
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d'});   // long lived
-        // cookie1:2h     maxAge = 24 hours > token expiry time. This enable generate "your login expired" message.
-        res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 24*60*60*1000 }); 
+        const refreshToken = generateRefreshToken(payload);   // long lived
+        // cookie1:2h
+        res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 2*60*60*1000 }); 
         // cookie2:7d
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7*24*60*60*1000 });
 
@@ -50,6 +50,10 @@ export const login = async (req, res) => {
 function generateAccessToken(payload) {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
 }
+function generateRefreshToken(payload) {
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+}
+
 
 // export const deleteUser = async (req, res) => {
 //     try {
