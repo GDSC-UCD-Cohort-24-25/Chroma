@@ -1,0 +1,3 @@
+bcrypt.compare syntax:
+    bcrypt.compare(plainPassword, hashedPassword, callback);
+
