@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-//import { createUserWithEmailAndPassword } from 'firebase/auth';
-//import { auth } from './firebaseConfig';
+
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
@@ -14,26 +13,32 @@ const SignUp = () => {
         e.preventDefault();
         console.log('Email:', email);
         console.log('Password:', password);
-        navigate('/setup');
-        setEmail('');
-        setPassword('');
-        setError('');
 
-        /*try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/signin');
-        } catch (err: any) {
-            console.error(err);
-            if (err.code === 'auth/invalid-email') {
-                setError('Invalid email format.');
-            } else if (err.code === 'auth/email-already-in-use') {
-                setError('This email is already in use.');
-            } else if (err.code === 'auth/weak-password') {
-                setError('Password is too weak.');
-            } else {
-                setError('Failed to create an account. Please try again.');
+        try {
+            const response = await fetch('https://chromaserver.onrender.com/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            const res = await response.json();
+            const success = res.success;
+            const message = res.message;
+
+            if (!success) {
+                console.log(message);
+                alert(message);
+                throw new Error(message);
+               
             }
-        }*/
+            else{
+                console.log('navigate to setup');
+                navigate('/setup');
+            }
+        } catch (error) {
+            setError('Failed to sign up. Please try again.');
+        }
     };
 
     return (
