@@ -14,11 +14,11 @@ export const register = async (req, res) => {
     } catch (error) {
         res.status(400).json({success:false, message: error.message });
     }
-}
+};
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;       //password here neeed 2b hashed
+        const { email, password } = req.body;       //password here is hashed
         const user = await User.findOne({ email: email });
         // Authenticate
         if (!user) {
@@ -27,6 +27,7 @@ export const login = async (req, res) => {
         if (!(await bcrypt.compare( password, user.password ))) {
             return res.status(400).json({ success:false, message: "Invalid password" });
         }
+
         // Create JWT token
         const payload = {
             user: {
@@ -45,14 +46,42 @@ export const login = async (req, res) => {
     catch (error) {
         res.status(400).json({ success:false, message: error.message });
     }
-}
+};
 
 function generateAccessToken(payload) {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
-}
+};
 function generateRefreshToken(payload) {
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
-}
+};
+
+export const refresh = async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ success:false, message: "No refresh token, please log in again" });
+    }
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ success:false, message: "Invalid refresh token, please log in again" });
+        }
+
+        // Generate a new access token
+        const newAccessToken = generateAccessToken({ id: decoded.id });
+
+        // Store the new access token in the cookie
+        res.cookie('accessToken', newAccessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            maxAge: 2 * 60 * 60 * 1000 // 2h
+        });
+
+        res.json({ success:true, message: "Token refreshed" });
+    });
+};
+
 
 
 // export const deleteUser = async (req, res) => {
