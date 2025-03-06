@@ -7,9 +7,33 @@ import jwt from 'jsonwebtoken';
 export const register = async (req, res) => {
     try {
         const { email, password } = req.body;
+        // Validate
+        if (!email || !password) {
+            return res.status(400).json({success:false, message:"Please provide email and password"});
+        }
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            return res.status(400).json({success:false, message:"User already exists with this email"});
+        }
+        // Hash the password, save user to db
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         const user = await User.create({ email:email, password:hashedPassword });    // create: new + save
+
+        // Create JWT token
+        const payload = {
+            user: {
+                id: user._id
+            }
+        }
+        const accessToken = generateAccessToken(payload);   // short lived: 2h
+        const refreshToken = generateRefreshToken(payload);   // long lived: 7d
+        // cookie1:2h
+        res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 2*60*60*1000 });
+        // cookie2:7d
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 7*24*60*60*1000 });
+
         res.status(201).json({success:true, message:"New Account Created", email: user.email});
     } catch (error) {
         res.status(400).json({success:false, message: error.message });
@@ -48,10 +72,10 @@ export const login = async (req, res) => {
     }
 };
 
-function generateAccessToken(payload) {
+function generateAccessToken(payload) {    //2h
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2h' });
 };
-function generateRefreshToken(payload) {
+function generateRefreshToken(payload) {    //7d
     return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 };
 
@@ -67,10 +91,8 @@ export const refresh = async (req, res) => {
             return res.status(403).json({ success:false, message: "Invalid refresh token, please log in again" });
         }
 
-        // Generate a new access token
         const newAccessToken = generateAccessToken({ id: decoded.id });
-
-        // Store the new access token in the cookie
+        // Store the new token in cookie
         res.cookie('accessToken', newAccessToken, {
             httpOnly: true,
             secure: true,

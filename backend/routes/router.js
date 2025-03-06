@@ -9,7 +9,7 @@ router.post('/auth/refresh', refresh);
 
 
 // /budgets
-    // wait for controller to be implemented
+// router.get('/api/budgets', auth, getBudgets);
 
 
 export default router;
