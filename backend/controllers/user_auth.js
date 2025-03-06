@@ -90,8 +90,8 @@ export const refresh = async (req, res) => {
         if (err) {
             return res.status(403).json({ success:false, message: "Invalid refresh token, please log in again" });
         }
-
-        const newAccessToken = generateAccessToken({ id: decoded.id });
+        // decoded = { user: { id: 'example_id' }, iat: 1631012345, exp: 1631015945 }
+        const newAccessToken = generateAccessToken({ user: decoded.user });
         // Store the new token in cookie
         res.cookie('accessToken', newAccessToken, {
             httpOnly: true,

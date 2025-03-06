@@ -15,7 +15,9 @@ export const auth = (req, res, next) => {   // middleware
         if (err) {
             return res.status(403).json({ success: false, message: "Invalid or expired token" });
         }
-        req.user = decoded.user; // Attach the decoded user to the request object
+        // decoded = { user: { id: 'example_id' }, iat: 1631012345, exp: 1631015945 }
+        // decoded.user = { id: 'example_id' }
+        req.user = decoded.user; // Attach to req obj
         next();
     });
   } catch (error) {
