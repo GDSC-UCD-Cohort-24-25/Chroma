@@ -80,28 +80,31 @@ function generateRefreshToken(payload) {    //7d
 };
 
 export const refresh = async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
-
-    if (!refreshToken) {
-        return res.status(401).json({ success:false, message: "No refresh token, please log in again" });
-    }
-
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ success:false, message: "Invalid refresh token, please log in again" });
+    // console.log(req.cookies);    //debug
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            return res.status(401).json({ success:false, message: "No refresh token, please log in again" });
         }
-        // decoded = { user: { id: 'example_id' }, iat: 1631012345, exp: 1631015945 }
-        const newAccessToken = generateAccessToken({ user: decoded.user });
-        // Store the new token in cookie
-        res.cookie('accessToken', newAccessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            maxAge: 2 * 60 * 60 * 1000 // 2h
-        });
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(403).json({ success:false, message: "Invalid refresh token, please log in again" });
+            }
+            // decoded = { user: { id: 'example_id' }, iat: 1631012345, exp: 1631015945 }
+            const newAccessToken = generateAccessToken({ user: decoded.user });
+            // Store the new token in cookie
+            res.cookie('accessToken', newAccessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'None',
+                maxAge: 2 * 60 * 60 * 1000 // 2h
+            });
 
-        res.json({ success:true, message: "Token refreshed" });
-    });
+            res.json({ success:true, message: "Token refreshed" });
+        });
+    } catch (error) {
+        return res.status(400).json({ success:false, message: error.message });
+    }
 };
 
 export const logout = async (req, res) => {
