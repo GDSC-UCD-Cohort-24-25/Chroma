@@ -104,7 +104,11 @@ export const refresh = async (req, res) => {
     });
 };
 
-
+export const logout = async (req, res) => {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.status(200).json({ success:true, message: "Logged out successfully" });
+};
 
 // export const deleteUser = async (req, res) => {
 //     try {
