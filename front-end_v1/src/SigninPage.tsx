@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-//import { signInWithEmailAndPassword } from 'firebase/auth';
-//import { auth } from './firebaseConfig';
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
@@ -11,38 +9,37 @@ const SignIn = () => {
     const navigate = useNavigate();
 
     
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
         console.log('Email:', email);
         console.log('Password:', password);
-        navigate('/setup');
-        setEmail('');
-        setPassword('');
-        setError('');
+        try {
+            const response = await fetch('https://chromaserver.onrender.com/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "email": email, "password": password }),
+            });
+            const res = await response.json();
+            const success = res.success;
+            const message = res.message;
+
+            if (!success) {
+                console.log("not success");
+                throw new Error(message);
+            }
+            else{
+                console.log('navigate to setup');
+                navigate('/setup');
+            }
+            
+        } catch (error) {
+            setError('Failed to sign up. Please try again.hhhhhhh');
+        }
        
       };
-        /*const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            navigate('/setup');
-        } catch (err: any) {
-            if (err.code === 'auth/invalid-email') {
-                setError('The email address is not valid.');
-            } else if (err.code === 'auth/user-disabled') {
-                setError('This user has been disabled.');
-            } else if (err.code === 'auth/user-not-found') {
-                setError('No user found with this email.');
-            } else if (err.code === 'auth/wrong-password') {
-                setError('Incorrect password. Please try again.');
-            } else {
-                setError('An error occurred. Please try again later.');
-            }
-        }
-    };*/
+        
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-rose-100 p-6">
