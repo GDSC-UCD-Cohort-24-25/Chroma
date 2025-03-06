@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://chromaserver.onrender.com/auth/login
+POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {

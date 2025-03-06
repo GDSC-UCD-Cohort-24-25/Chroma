@@ -42,7 +42,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;       //password here is hashed
+        const { email, password } = req.body;       //password here is not hashed
         const user = await User.findOne({ email: email });
         // Authenticate
         if (!user) {
