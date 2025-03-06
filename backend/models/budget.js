@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const budgetSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Reference to User
     name: { type: String, required: true }, // Budget category name
     amount: { type: Number, default:0 }, // Amount allocated
     percentage: { type: Number, required: true }, // Percentage of total budget

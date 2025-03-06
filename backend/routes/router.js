@@ -10,7 +10,7 @@ router.post('/auth/refresh', refresh);
 router.post('/auth/logout', logout);
 
 
-// /budgets
+// /budgets  (protected)
 router.get('/api/budgets', auth, getBudgets);
 
 

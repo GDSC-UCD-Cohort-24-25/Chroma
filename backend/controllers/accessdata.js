@@ -25,8 +25,9 @@ export const auth = (req, res, next) => {   // middleware
 
 export const getBudgets = async (req, res) => {
   try {
-    const budgets = await Budget.find();
-    res.status(200).json({ success: true, data: budgets });
+    const userId = req.user.id;  // req.user is attached in auth middleware
+    const budgets = await Budget.find({ userId });
+    res.status(200).json({ success: true, data: budgets, message: "Successfully fetched budgets" });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
