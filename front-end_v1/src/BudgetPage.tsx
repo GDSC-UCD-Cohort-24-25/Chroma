@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Wallet, PieChart, Coffee, ShoppingBag, Car, Home, Gamepad2, Utensils, Plus, Trash2, Sparkles } from 'lucide-react';
-
+import { fetchUserBudget } from '../services/apiService'; // Adjust the import path as necessary
+import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
 
 interface Budget {
     total: number;
@@ -104,10 +105,24 @@ interface Budget {
       name: '',
       percentage: 0
     });
+    const [error, setError] = useState<string | null>(null);
   
     useEffect(() => {
-      updateBucketAmounts();
-    }, [budget.total]);
+      // Fetch budget data from the backend when the component mounts
+      const loadBudgets = async () => {
+        try {
+          const data = await fetchUserBudget(); // Fetch budgets from the backend
+          if (data && data.buckets) {
+              setBudget({
+                  total: data.total || 0, buckets: data.buckets || []
+              });
+          }
+        } catch (error: any) {
+            setError(error.message || 'An error occurred while fetching budgets.');
+        } 
+      };
+      loadBudgets();
+    }, []);
   
     const updateBucketAmounts = () => {
       const updatedBuckets = budget.buckets.map(bucket => ({
@@ -120,6 +135,7 @@ interface Budget {
     const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = parseFloat(e.target.value) || 0;
       setBudget(prev => ({ ...prev, total: value }));
+      updateBucketAmounts();
     };
   
     const handlePercentageChange = (id: string, newPercentage: number) => {
@@ -130,8 +146,24 @@ interface Budget {
       updateBucketAmounts();
     };
   
-    const addNewBucket = () => {
+    const addNewBucket = async () => {
       if (newBucket.name && newBucket.percentage) {
+        // Checks for empty name and percentage range
+          if (!newBucket.name.trim()) {
+            alert('Bucket name cannot be empty.');
+            return;
+          }
+          if (newBucket.percentage <= 0 || newBucket.percentage > 100) {
+            alert('Percentage must be between 1 and 100.');
+            return;
+          }
+      
+          const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0) + newBucket.percentage;
+          if (totalPercentage > 100) {
+            alert('Total percentage cannot exceed 100%.');
+            return;
+          }
+
         const newId = (budget.buckets.length + 1).toString();
         const newBucketItem: BucketType = {
           id: newId,
@@ -142,20 +174,46 @@ interface Budget {
           recommendations: ['Customize your recommendations'],
           color: '#FFD1DC' // Default new bucket color
         };
-        setBudget(prev => ({
-          ...prev,
-          buckets: [...prev.buckets, newBucketItem]
-        }));
-        setNewBucket({ name: '', percentage: 0 });
-        setShowNewBucketForm(false);
+        const updatedBudget = {
+          ...budget,
+          buckets: [...budget.buckets, newBucketItem],
+      };
+
+      setBudget(updatedBudget);
+      setNewBucket({ name: '', percentage: 0 });
+      setShowNewBucketForm(false);
+
+      try {
+        await saveBudget(updatedBudget);
+        alert('Bucket added successfully!');
+      } catch (err: any) {
+          alert(err.message || 'Failed to save the bucket.');
       }
+  }
     };
   
-    const deleteBucket = (id: string) => {
-      setBudget(prev => ({
-        ...prev,
-        buckets: prev.buckets.filter(bucket => bucket.id !== id)
-      }));
+    const deleteBucket = async (id: string) => {
+      if (id === '1') {
+          alert('You cannot delete the default bucket.');
+          return;
+      }
+      if (!window.confirm('Are you sure you want to delete this bucket?')) {
+        return;
+      }
+
+      const updatedBudget = {
+        ...budget,
+        buckets: budget.buckets.filter((bucket) => bucket.id !== id),
+      };
+
+      setBudget(updatedBudget);
+
+      try {
+        await saveBudget(updatedBudget);
+        alert('Bucket deleted successfully!');
+      } catch (err: any) {
+          alert(err.message || 'Failed to delete the bucket.');
+      }
     };
   
     const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0);

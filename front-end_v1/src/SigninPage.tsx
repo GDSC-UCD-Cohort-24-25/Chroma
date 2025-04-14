@@ -1,41 +1,28 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import { loginUser } from '../services/apiService'; // Adjust the import path as necessary
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-
+    const { login } = useAuth(); // Use the login function from AuthContext
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Email:', email);
-        console.log('Password:', password);
+        //console.log('Email:', email);
+        //console.log('Password:', password);
         try {
-            const response = await fetch('https://chromaserver.onrender.com/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ "email": email, "password": password }),
-            });
-            const res = await response.json();
-            const success = res.success;
-            const message = res.message;
-
-            if (!success) {
-                console.log("not success");
-                throw new Error(message);
-            }
-            else{
-                console.log('navigate to setup');
-                navigate('/setup');
-            }
-            
-        } catch (error) {
-            setError('Failed to sign up. Please try again.hhhhhhh');
+            await loginUser(email, password); // Call the API service
+            login(); // Update global authentication state
+            console.log('navigate to setup'); //debug
+            navigate('/setup'); // Navigate to the setup page
+        } catch (error:any) {
+            setError(error.message || 'Failed to sign up. Please try again.hhhhhhh');
+            console.error(error); // Log the error for debugging
         }
        
       };
