@@ -1,4 +1,5 @@
 # Ignore node_modules folder so the dependencies are not committed
 # to the repository.
 node_modules/
+.env
 
