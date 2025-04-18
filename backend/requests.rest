@@ -1,0 +1,30 @@
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "email": "example@gmail.com",
+    "password": "123456"
+}
+
+###
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "example@gmail.com",
+    "password": "123456"
+}
+
+###
+POST http://localhost:3000/auth/logout
+
+###
+POST http://localhost:3000/auth/refresh
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjdjNDUzYTI4ZjE3MzAwY2YwZTZjOTg5In0sImlhdCI6MTc0MTI2MjIxNiwiZXhwIjoxNzQxMjY5NDE2fQ.oXIZt4vwnU-G2usfcLTgT3lliDhAeL-nmeBT7wjS9aE;refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjdjNDUzYTI4ZjE3MzAwY2YwZTZjOTg5In0sImlhdCI6MTc0MTI2MjIxNiwiZXhwIjoxNzQxODY3MDE2fQ.w7XNwYt5_-axiFw-jRmvAh3Tqa4sU2Y07xs6sIFz92Y;
+
+###
+# accessDB requests:
+GET http://localhost:3000/api/budgets
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjdjNDUzYTI4ZjE3MzAwY2YwZTZjOTg5In0sImlhdCI6MTc0MTI2MjIxNiwiZXhwIjoxNzQxMjY5NDE2fQ.oXIZt4vwnU-G2usfcLTgT3lliDhAeL-nmeBT7wjS9aE;refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjdjNDUzYTI4ZjE3MzAwY2YwZTZjOTg5In0sImlhdCI6MTc0MTI2MjIxNiwiZXhwIjoxNzQxODY3MDE2fQ.w7XNwYt5_-axiFw-jRmvAh3Tqa4sU2Y07xs6sIFz92Y;
+
+###
