@@ -39,9 +39,9 @@ const SetupStep2 = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-rose-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F4EA] p-6">
       <div className="max-w-md w-full bg-white/90 p-8 rounded-3xl shadow-xl backdrop-blur-md">
-        <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-6 text-center">
+        <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] mb-6 text-center">
           Step 2: Name Your <br></br> Budget Categories
         </h2>
         <p className="text-lg text-gray-700 text-center mb-6">
@@ -73,7 +73,7 @@ const SetupStep2 = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-opacity"
+            className="w-full px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
           >
             Save and Continue
           </button>

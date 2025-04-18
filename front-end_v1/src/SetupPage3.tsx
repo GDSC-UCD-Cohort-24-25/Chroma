@@ -56,9 +56,9 @@ const handleExpenseChange = (index: number, value: string) => {
   };
 
  return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-rose-100 p-6">
+  <div className="min-h-screen flex items-center justify-center bg-[#F4F4EA]  p-6">
     <div className="max-w-2xl w-full bg-white/90 p-8 rounded-3xl shadow-xl backdrop-blur-md">
-      <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-6 text-center">
+      <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] mb-6 text-center">
         Step 3: Enter Your Budget Category Values
       </h2>
       <p className="text-lg text-gray-700 text-center mb-6">
@@ -66,7 +66,7 @@ const handleExpenseChange = (index: number, value: string) => {
       </p>
 
       {/* Header Row */}
-      <div className="grid grid-cols-[auto_2fr_1fr_1fr] items-center gap-4 mb-2">
+      <div className="grid grid-cols-[auto_.5fr_1fr_1fr] items-center gap-4 mb-2">
         <span></span>
         <span></span>
         <span className="text-lg text-center font-semibold text-gray-700">Budget</span>
@@ -76,7 +76,7 @@ const handleExpenseChange = (index: number, value: string) => {
       <form className="space-y-4" onSubmit={handleSubmit}>
         {categoryNames.map((name, index) => (
           <div key={index}>
-            <div className="grid grid-cols-[auto_2fr_1fr_1fr] items-center gap-4">
+            <div className="grid grid-cols-[auto_.5fr_1fr_1fr] items-center gap-4">
               {/* Number */}
               <span className="text-lg font-semibold text-gray-700">{index + 1}.</span>
               {/* Category Name */}
@@ -110,9 +110,10 @@ const handleExpenseChange = (index: number, value: string) => {
         ))}
 
         {/* Submit Button */}
+        <p></p>
         <button
           type="submit"
-          className="w-full mt-6 px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-opacity"
+          className="w-full mt-6 px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
         >
           Take me to my dashboard!
         </button>
