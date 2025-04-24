@@ -118,19 +118,9 @@ export const fetchUserBudget = async ()  => {
 };
 
 // backend: integrate post /api/budgets route for saving budgets
-export const saveBudget = async (budget: {
-    total: number;
-    buckets: {
-        id: string;
-        name: string;
-        amount: number;
-        percentage: number;
-        icon: string;
-        recommendations: string[];
-        color: string;
-    }[];
-}) => {
+export const saveBudget = async (budget: any) => {
     try {
+        console.log('Saving budget:', budget); //debug
         const response = await fetch(`${API_BASE_URL}/api/budgets`, {
             method: 'POST',
             headers: {

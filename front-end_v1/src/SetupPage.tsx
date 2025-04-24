@@ -11,19 +11,20 @@ const Setup = () => {
     e.preventDefault();
     try {
       const budgetData = {
-        total: parseFloat(monthlyBudget), // monthly budget
+        total: parseFloat(monthlyBudget) || -1, // Total monthly budget
         buckets: Array.from({ length: parseInt(numCategories) || 0 }, (_, index) => ({
-          id: (index + 1).toString(),
+          id: new Date().toISOString(),  // Using ISO string as a unique ID for each bucket
           name: `Category ${index + 1}`,
           amount: 0,
           percentage: 0,
-          icon: '',
+          icon: 'default_icon',
           recommendations: [],
-          color: '',
+          color: '#3498db',  // Default color
         })),
       };
 
       const res = await saveBudget(budgetData); // Save budget to the backend
+      
       console.log(res); // Log the response for debugging
       console.log('Budget saved successfully');
       navigate('/budget'); // Navigate to the budget page
