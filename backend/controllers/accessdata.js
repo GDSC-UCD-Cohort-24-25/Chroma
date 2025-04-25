@@ -1,6 +1,8 @@
-// do REST on db
+// do RESTAPI on db
 import Budget from "../models/Budget.js";
 
+
+// ALL requests are BY UserID
 export const getBudgets = async (req, res) => {
   try {
     const userId = req.user.id;  // req.user is attached in auth middleware
@@ -45,12 +47,12 @@ export const deleteBudgets = async (req, res) => {
   }
 }
 
-export const getBudgetsByUserId = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const budgets = await Budget.find({ userId });
-    res.status(200).json({ success: true, data: budgets, message: "Successfully fetched budgets" });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-}
+// export const getBudgetsByUserId = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     const budgets = await Budget.find({ userId });
+//     res.status(200).json({ success: true, data: budgets, message: "Successfully fetched budgets" });
+//   } catch (error) {
+//     res.status(400).json({ success: false, message: error.message });
+//   }
+// }
