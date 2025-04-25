@@ -13,6 +13,7 @@ router.post('/auth/logout', logout);
 
 // /budgets  (protected)
 router.get('/api/budgets', auth, getBudgets);
+router.post('/api/budgets', auth, getBudgets);
 
 
 export default router;

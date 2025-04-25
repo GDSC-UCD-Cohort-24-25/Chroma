@@ -1,20 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
 
 const Setup = () => {
   const [monthlyBudget, setMonthlyBudget] = useState('');
   const [numCategories, setNumCategories] = useState('');
   const navigate = useNavigate();
-  
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+
     e.preventDefault();
+    try {
+      const budgetData = {
+        total: parseFloat(monthlyBudget) || -1, // Total monthly budget
+        buckets: Array.from({ length: parseInt(numCategories) || 0 }, (_, index) => ({
+          id: new Date().toISOString(),  // Using ISO string as a unique ID for each bucket
+          name: `Category ${index + 1}`,
+          amount: 0,
+          percentage: 0,
+          icon: 'default_icon',
+          recommendations: [],
+          color: '#3498db',  // Default color
+        })),
+      };
+
+      const res = await saveBudget(budgetData); // Save budget to the backend
+      
+      console.log(res); // Log the response for debugging
+      console.log('Budget saved successfully');
+      navigate('/budget'); // Navigate to the budget page
     
+    } catch (error: any) {
+      alert(error.message || 'An error occurred while saving the budget.');
+    }
+
   localStorage.setItem('monthlyBudget', monthlyBudget);
     localStorage.setItem('numCategories', numCategories);
 
     console.log('Monthly Budget:', monthlyBudget);
     console.log('Number of Categories:', numCategories);
     navigate('/setuptwo');
+
     setMonthlyBudget('');
     setNumCategories('');
 
