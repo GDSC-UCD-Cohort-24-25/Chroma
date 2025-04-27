@@ -16,10 +16,13 @@ const SignIn = () => {
         //console.log('Email:', email);
         //console.log('Password:', password);
         try {
-            await loginUser(email, password); // Call the API service
-            login(); // Update global authentication state
-            console.log('navigate to setup'); //debug
-            navigate('/setup'); // Navigate to the setup page
+            const res =await loginUser(email, password); // Call the API service
+            console.log('API Response:', res);
+            login();
+            console.log('navigate to dashboard'); //debug
+            navigate('/budget');
+        
+            
         } catch (error:any) {
             setError(error.message || 'Failed to sign up. Please try again.hhhhhhh');
             console.error(error); // Log the error for debugging

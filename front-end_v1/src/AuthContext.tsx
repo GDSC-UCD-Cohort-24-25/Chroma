@@ -13,9 +13,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Login
+  const login = () => {
+    setIsAuthenticated(true);
+  };
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  // Logout
+  const logout = () => {
+    setIsAuthenticated(false);
+    
+  };
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>

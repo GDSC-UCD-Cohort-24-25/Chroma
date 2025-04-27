@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Wallet, PieChart, Coffee, ShoppingBag, Car, Home, Gamepad2, Utensils, Plus, Trash2, Sparkles } from 'lucide-react';
 import { fetchUserBudget } from '../services/apiService'; // Adjust the import path as necessary
 import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
-
+import { useAuth } from './AuthContext';
 interface Budget {
     total: number;
     buckets: BucketType[];
@@ -106,22 +106,27 @@ interface Budget {
       percentage: 0
     });
     const [error, setError] = useState<string | null>(null);
-  
+    const { isAuthenticated } = useAuth();
     useEffect(() => {
-      // Fetch budget data from the backend when the component mounts
       const loadBudgets = async () => {
         try {
-          const data = await fetchUserBudget(); // Fetch budgets from the backend
-          if (data && data.buckets) {
-              setBudget({
-                  total: data.total || 0, buckets: data.buckets || []
-              });
+          if (isAuthenticated) {
+            // Fetch user budget and categories
+            const data = await fetchUserBudget();
+            setBudget({
+              total: data.totalBudget || 0,
+              buckets: data.Categories || [],
+            });
+          } else {
+            console.log("User is not authenticated.");
+            window.location.href = '/';
           }
-        } catch (error: any) {
-            setError(error.message || 'An error occurred while fetching budgets.');
-        } 
+        } catch (error) {
+          console.error('Error fetching user budget:', error);
+        }
       };
       loadBudgets();
+      
     }, []);
   
     const updateBucketAmounts = () => {
@@ -184,7 +189,10 @@ interface Budget {
       setShowNewBucketForm(false);
 
       try {
-        await saveBudget(updatedBudget);
+        await saveBudget({
+          totalBudget: updatedBudget.total,
+          Categories: updatedBudget.buckets
+        });
         alert('Bucket added successfully!');
       } catch (err: any) {
           alert(err.message || 'Failed to save the bucket.');
@@ -209,7 +217,10 @@ interface Budget {
       setBudget(updatedBudget);
 
       try {
-        await saveBudget(updatedBudget);
+        await saveBudget({
+          totalBudget: updatedBudget.total,
+          Categories: updatedBudget.buckets
+        });
         alert('Bucket deleted successfully!');
       } catch (err: any) {
           alert(err.message || 'Failed to delete the bucket.');

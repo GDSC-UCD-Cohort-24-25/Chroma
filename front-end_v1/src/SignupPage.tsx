@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/apiService';
-import { useAuth } from './AuthContext'; // Adjust the import path as necessary
+import { useAuth } from './AuthContext';
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth(); // Use the login function from AuthContext
+    const { login } = useAuth();
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,9 +18,12 @@ const SignUp = () => {
 
         try {
             const res = await registerUser(email, password);
+            console.log('API Response:', res);
             login();
-            //console.log('Navigate to setup'); //debug
+            console.log('Navigate to setup'); //debug
             navigate('/setup');
+            
+            
         } catch (error: any) {
             setError(error.message || 'Failed to sign up. Please try again.1');
             //console.error(error); // Log the error for debugging

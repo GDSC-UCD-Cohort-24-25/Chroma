@@ -54,9 +54,6 @@ export const logoutUser = async () => {
             throw new Error('Failed to log out.');
         }
 
-        // Clear local tokens or session data if applicable
-        localStorage.removeItem('authToken'); // remove token from localStorage
-
         // redirect to login page
         window.location.href = "/";
     } catch (error: any) {
@@ -100,9 +97,10 @@ export const fetchUserBudget = async ()  => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include token in headers if needed
             },
+            credentials: 'include', 
         });
+        console.log('body budget:', response.body);
         console.log('Response status:', response.status);//debug
         console.log('Response headers:', response.headers);//debug
         if (!response.ok) {
@@ -117,17 +115,21 @@ export const fetchUserBudget = async ()  => {
     }
 };
 
-// backend: integrate post /api/budgets route for saving budgets
-export const saveBudget = async (budget: any) => {
+export const saveBudget = async (
+        budget: { totalBudget: number; 
+        Categories: Array<{ id: string; name: string; amount: number; percentage: number; icon: string; recommendations: Array<string>; color: string }> }
+) => {
     try {
-        console.log('Saving budget:', budget); //debug
-        const response = await fetch(`${API_BASE_URL}/api/budgets`, {
+        console.log('Saving budget:', budget.totalBudget); //debug
+        console.log('Categories:', budget.Categories); //debug
+        
+        const response = await fetch(`${API_BASE_URL}/api/budgets/save`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('authToken')}`,
             },
             body: JSON.stringify(budget),
+            credentials: 'include',
         });
 
         if (!response.ok) {

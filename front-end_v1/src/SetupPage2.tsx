@@ -33,6 +33,7 @@ const SetupStep2 = () => {
 
     // Save category names in localStorage
     localStorage.setItem('categoryNames', JSON.stringify(categoryNames));
+    console.log('Category Names:', categoryNames); // Debugging log
 
     // Navigate to the next page or dashboard
     navigate('/setupthree');

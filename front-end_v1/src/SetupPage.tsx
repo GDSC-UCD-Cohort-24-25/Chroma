@@ -13,7 +13,7 @@ const Setup = () => {
     try {
       const budgetData = {
         total: parseFloat(monthlyBudget) || -1, // Total monthly budget
-        buckets: Array.from({ length: parseInt(numCategories) || 0 }, (_, index) => ({
+        Categories: Array.from({ length: parseInt(numCategories) || 0 }, (_, index) => ({
           id: new Date().toISOString(),  // Using ISO string as a unique ID for each bucket
           name: `Category ${index + 1}`,
           amount: 0,
@@ -24,7 +24,9 @@ const Setup = () => {
         })),
       };
 
-      const res = await saveBudget(budgetData); // Save budget to the backend
+      const res = await saveBudget({ 
+        totalBudget: budgetData.total, Categories: budgetData.Categories
+      }); // Save budget to the backend
       
       console.log(res); // Log the response for debugging
       console.log('Budget saved successfully');
@@ -34,7 +36,7 @@ const Setup = () => {
       alert(error.message || 'An error occurred while saving the budget.');
     }
 
-  localStorage.setItem('monthlyBudget', monthlyBudget);
+    localStorage.setItem('monthlyBudget', monthlyBudget);
     localStorage.setItem('numCategories', numCategories);
 
     console.log('Monthly Budget:', monthlyBudget);
