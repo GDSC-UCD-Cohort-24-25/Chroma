@@ -9,13 +9,14 @@ import Setup from './SetupPage';
 // import SetupStepTwo from './SetupPage2';
 // import SetupStepThree from './SetupPage3';
 import Layout from './layout';
+import { AuthProvider } from './AuthContext';
 
 
 function App() {
   return (
+    <AuthProvider>
     <Router>
       <Routes>
- aishwari_setup
         <Route path="/setup" element={<Setup />} />
         <Route path="/setuptwo" element ={<SetupStepTwo />}/>
         <Route path="/setupthree" element ={<SetupStepThree />}/>
@@ -29,6 +30,7 @@ function App() {
 
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

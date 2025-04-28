@@ -1,43 +1,30 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
+import { registerUser } from '../services/apiService';
+import { useAuth } from './AuthContext'; // Adjust the import path as necessary
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-
+    const { login } = useAuth(); // Use the login function from AuthContext
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Email:', email);
+        console.log('Email:', email); //debug
         console.log('Password:', password);
 
         try {
-            const response = await fetch('https://chromaserver.onrender.com/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
-            const res = await response.json();
-            const success = res.success;
-            const message = res.message;
-
-            if (!success) {
-                console.log(message);
-                alert(message);
-                throw new Error(message);
-               
-            }
-            else{
-                console.log('navigate to setup');
-                navigate('/setup');
-            }
-        } catch (error) {
-            setError('Failed to sign up. Please try again.');
+            const res = await registerUser(email, password);
+            login();
+            //console.log('Navigate to setup'); //debug
+            navigate('/setup');
+        } catch (error: any) {
+            setError(error.message || 'Failed to sign up. Please try again.1');
+            //console.error(error); // Log the error for debugging
+            
         }
     };
 

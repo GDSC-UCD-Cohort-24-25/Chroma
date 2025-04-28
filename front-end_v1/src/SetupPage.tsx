@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
 
 const Setup = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Setup = () => {
     setErrors(new Array(parseInt(numCategories)).fill(''));
     setStep(2);
   };
+
 
   const goToStepThree = () => {
     const hasEmpty = categoryNames.some(name => name.trim() === '');
