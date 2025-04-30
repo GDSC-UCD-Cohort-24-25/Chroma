@@ -6,8 +6,8 @@ import SignUp from './SignupPage';
 import SignIn from './SigninPage';
 import Setup from './SetupPage';
 
-// import SetupStepTwo from './SetupPage2';
-// import SetupStepThree from './SetupPage3';
+import SetupStepTwo from './SetupPage2';
+import SetupStepThree from './SetupPage3';
 import Layout from './layout';
 import { AuthProvider } from './AuthContext';
 
