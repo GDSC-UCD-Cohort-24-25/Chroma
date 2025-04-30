@@ -18,8 +18,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/setup" element={<Setup />} />
-        <Route path="/setuptwo" element ={<SetupStepTwo />}/>
-        <Route path="/setupthree" element ={<SetupStepThree />}/>
+      
 
 
         <Route path="/setup" element={ <Layout><Setup /></Layout>}/>
