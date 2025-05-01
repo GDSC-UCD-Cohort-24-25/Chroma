@@ -3,6 +3,8 @@ import { Wallet, PieChart, Coffee, ShoppingBag, Car, Home, Gamepad2, Utensils, P
 import { fetchUserBudget } from '../services/apiService'; // Adjust the import path as necessary
 import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
 import { useAuth } from './AuthContext';
+import MiniPieChart from '../src/MiniPieChart'; // Adjust the path if your MiniPieChart.tsx is in a different folder
+
 interface Budget {
     total: number;
     buckets: BucketType[];
@@ -21,16 +23,14 @@ interface Budget {
   const defaultBuckets: BucketType[] = [
     {
       id: '1',
-      name: 'Food & Treats',
-      amount: 0,
-      percentage: 30,
-      icon: 'Utensils',
+      name: 'Rent',
+      amount: 1000,
+      percentage: 20,
+      icon: 'Home',
       recommendations: [
-        'Sweetgreen - Fresh & Instagram-worthy salads',
-        'Local Cafes - Aesthetic brunch spots',
-        'Whole Foods - Organic & trendy snacks'
+        'Fixed rent',
       ],
-      color: '#FF9ECD' // Soft pink
+      color: '#8FB6B0' //blue
     },
     {
       id: '2',
@@ -39,11 +39,10 @@ interface Budget {
       percentage: 20,
       icon: 'Gamepad2',
       recommendations: [
-        'Local Art Classes - Express your creativity',
-        'Rooftop Yoga - Wellness with a view',
-        'Pop-up Events - Exclusive experiences'
+        'empty for now',
+         '',
       ],
-      color: '#B5B7FF' // Soft purple
+      color: '#EEAB8C' // orange
     },
     {
       id: '3',
@@ -52,11 +51,10 @@ interface Budget {
       percentage: 15,
       icon: 'ShoppingBag',
       recommendations: [
-        'Reformation - Sustainable fashion finds',
-        'Sephora - Beauty must-haves',
-        'Urban Outfitters - Room decor goals'
+        'empty for now',
+         '',
       ],
-      color: '#FFB5E8' // Light pink
+      color: '#C18BC1' //purple
     },
     {
       id: '4',
@@ -65,11 +63,10 @@ interface Budget {
       percentage: 15,
       icon: 'Car',
       recommendations: [
-        'Uber - Safe rides for night outs',
-        'City Bike Share - Eco-friendly transport',
-        'Monthly Transit Pass - Budget-friendly commuting'
+        'empty for now',
+         '',
       ],
-      color: '#AFF8DB' // Mint
+      color: '#F3DFA1' // yellow
     },
     {
       id: '5',
@@ -78,11 +75,10 @@ interface Budget {
       percentage: 10,
       icon: 'Coffee',
       recommendations: [
-        'Aesthetic Cafes - Perfect for content creation',
-        'Boba Tea Spots - Sweet treat yourself moments',
-        'Pressed Juice Bars - Healthy glow up'
+        'empty for now',
+         '',
       ],
-      color: '#FFC9DE' // Dusty pink
+      color: '#FFC9DE' //  pink
     }
   ];
   
@@ -176,7 +172,7 @@ interface Budget {
           amount: (newBucket.percentage / 100) * budget.total,
           percentage: newBucket.percentage,
           icon: 'Home',
-          recommendations: ['Customize your recommendations'],
+          recommendations: ['Customize!'],
           color: '#FFD1DC' // Default new bucket color
         };
         const updatedBudget = {
@@ -230,170 +226,159 @@ interface Budget {
     const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0);
   
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-rose-100 p-6">
+      <div className="min-h-screen bg-[#F4F4EA] p-6">
         <div 
           className="max-w-6xl mx-auto"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1557683311-eac922347aa1?auto=format&fit=crop&w=2080&q=80')",
-            backgroundSize: 'cover',
-            backgroundAttachment: 'fixed',
-            backgroundPosition: 'center'
-          }}
         >
-          <div className="backdrop-blur-md bg-white/80 rounded-3xl p-8 shadow-xl">
-            <div className="flex items-center justify-center mb-8">
-              <Sparkles className="w-8 h-8 text-pink-500 mr-2" />
-              <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
-                Budget Bestie
-              </h1>
-              <Sparkles className="w-8 h-8 text-pink-500 ml-2" />
-            </div>
+          <div >
   
-            <div className="bg-white/90 rounded-2xl shadow-lg p-6 mb-8 border border-pink-200">
-              <div className="flex items-center mb-6">
-                <PieChart className="w-6 h-6 text-pink-500 mr-2" />
-                <h2 className="text-xl font-semibold text-gray-700">Total Budget</h2>
+            <div className="bg-[#B3D5C2] rounded-2xl shadow-lg p-6 mb-8 ">
+              <div className="flex items-center mb-2">
+                <PieChart className="w-6 h-6 text-[#10492A] mr-2 " />
+                <h2 className="text-xl font-semibold text-gray-700">Budget: ${budget.total}</h2>
               </div>
-              <input
-                type="number"
-                value={budget.total || ''}
-                onChange={handleBudgetChange}
-                className="w-full px-4 py-3 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent placeholder-pink-300"
-                placeholder="✨ Enter your total budget ✨"
-              />
+             
             </div>
   
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {budget.buckets.map(bucket => (
-                <div key={bucket.id} className="bg-white/90 rounded-2xl shadow-lg p-6 border border-pink-200 hover:border-pink-400 transition-all duration-300">
+                <div key={bucket.id} className="relative bg-[#DEE9DC] rounded-2xl shadow-lg p-6 border text-[#10492A] transition-all duration-300">
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center">
                       {iconMap[bucket.icon]}
                       <h3 className="text-lg font-semibold text-gray-700 ml-2">{bucket.name}</h3>
                     </div>
                     {bucket.id !== '1' && (
-                      <button
-                        onClick={() => deleteBucket(bucket.id)}
-                        className="text-pink-400 hover:text-pink-600"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    )}
+  <div className="flex items-center space-x-2">
+    <button
+      onClick={() => deleteBucket(bucket.id)}
+      className="text-[#10492A] hover:text-pink-600"
+    >
+      <Trash2 className="w-5 h-5" />
+    </button>
+
+    <button
+    //NEED TO MAKE THIS ADD SPENDING
+    onClick={() => setShowNewBucketForm(true)}
+    className="absolute bottom-5 right-5 text-[#10492A] hover:text-pink-600"
+>
+    <Plus className="w-5 h-5" />
+</button>
+    
+
+  </div>
+)}
                   </div>
                   
-                  <div className="mb-4">
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={bucket.percentage}
-                      onChange={(e) => handlePercentageChange(bucket.id, parseInt(e.target.value))}
-                      className="w-full h-2 bg-pink-100 rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: bucket.color,
-                        backgroundSize: `${bucket.percentage}% 100%`,
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    />
-                    <div className="flex justify-between text-sm text-gray-600 mt-1">
-                      <span className="text-pink-500 font-medium">{bucket.percentage}%</span>
-                      <span className="text-purple-500 font-medium">${bucket.amount.toFixed(2)}</span>
-                    </div>
-                  </div>
+               
+                  <div className="absolute bottom-6 right-12">
+        <MiniPieChart percentage={bucket.percentage} color={bucket.color} size={75} strokeWidth={8} />
+        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">
+           
+        </span>
+    </div>
   
                   <div className="mt-4">
-                    <h4 className="font-medium text-gray-700 mb-2">✨ Recommended Places:</h4>
+                    <h4 className="font-medium text-gray-700 mb-2">Recommended Places:</h4>
                     <ul className="text-sm text-gray-600 space-y-1">
                       {bucket.recommendations.map((rec, index) => (
-                        <li key={index} className="list-none ml-4 before:content-['💖'] before:mr-2">{rec}</li>
+                        <li key={index} className="list-none ml-4 before:content-['»'] before:mr-2">{rec}</li>
                       ))}
                     </ul>
                   </div>
+
+                  
+
+                  
+
+                  
                 </div>
               ))}
   
-              {!showNewBucketForm && (
-                <button
-                  onClick={() => setShowNewBucketForm(true)}
-                  className="bg-white/90 rounded-2xl shadow-lg p-6 border-2 border-dashed border-pink-300 flex items-center justify-center hover:border-pink-500 transition-colors"
-                >
-                  <Plus className="w-6 h-6 text-pink-400" />
-                  <span className="ml-2 text-pink-500">Add New Category</span>
-                </button>
-              )}
-            </div>
   
+            </div>
+
+                        {/*adds spending*/}
             {showNewBucketForm && (
-              <div className="bg-white/90 rounded-2xl shadow-lg p-6 mb-8 border border-pink-200">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">✨ Add New Category</h3>
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    value={newBucket.name}
-                    onChange={(e) => setNewBucket(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-4 py-2 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent"
-                    placeholder="Category Name"
-                  />
-                  <input
-                    type="number"
-                    value={newBucket.percentage || ''}
-                    onChange={(e) => setNewBucket(prev => ({ ...prev, percentage: parseFloat(e.target.value) || 0 }))}
-                    className="w-full px-4 py-2 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent"
-                    placeholder="Percentage (%)"
-                  />
-                  <div className="flex space-x-4">
-                    <button
-                      onClick={addNewBucket}
-                      className="px-6 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover:opacity-90 transition-opacity"
-                    >
-                      Add Category ✨
-                    </button>
-                    <button
-                      onClick={() => setShowNewBucketForm(false)}
-                      className="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-  
-            <div className="bg-white/90 rounded-2xl shadow-lg p-6 border border-pink-200">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">Budget Distribution</h2>
-                <span className={`text-sm font-medium ${totalPercentage > 100 ? 'text-red-500' : 'text-pink-500'}`}>
-                  Total: {totalPercentage}% ✨
-                </span>
-              </div>
-              <div className="h-4 bg-pink-100 rounded-full overflow-hidden">
-                {budget.buckets.map(bucket => (
-                  <div
-                    key={bucket.id}
-                    style={{
-                      width: `${bucket.percentage}%`,
-                      height: '100%',
-                      float: 'left',
-                      backgroundColor: bucket.color
-                    }}
-                    className="transition-all duration-300"
-                  />
-                ))}
-              </div>
-              <div className="mt-4 flex flex-wrap gap-4">
-                {budget.buckets.map(bucket => (
-                  <div key={bucket.id} className="flex items-center">
-                    <div
-                      className="w-3 h-3 rounded-full mr-2"
-                      style={{
-                        backgroundColor: bucket.color
-                      }}
-                    />
-                    <span className="text-sm text-gray-600">{bucket.name}</span>
-                  </div>
-                ))}
-              </div>
+    <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-4 mb-8 border border-pink-200 w-full md:w-1/2 lg:w-1/3">
+        <h3 className="text-md font-semibold text-[#10492A] mb-2">Add Spending:</h3>
+        <div className="space-y-2">
+            
+            <input
+                type="number"
+                className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
+                placeholder="Amount"
+            />
+            <div className="flex space-x-2">
+                <button
+                    className="px-3 py-1 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity text-sm"
+                >
+                    Add
+                </button>
+                <button
+                    onClick={() => setShowNewBucketForm(false)}
+                    className="px-3 py-1 bg-gray-100 text-[#10492A] rounded-xl hover:bg-gray-200 text-sm"
+                >
+                    Cancel
+                </button>
             </div>
+        </div>
+    </div>
+)}
+  
+      
+       {/*adds new bucket*/}
+             <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-4 mb-8 border border-pink-200 w-full md:w-1/2 lg:w-1/3">
+                    <h3 className="text-md font-semibold text-[#10492A] mb-2">Add New Category:</h3>
+                    <div className="space-y-2">
+                        <input
+                            type="text"
+                            value={newBucket.name}
+                            onChange={(e) => setNewBucket(prev => ({ ...prev, name: e.target.value }))}
+                            className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
+                            placeholder="Category Name"
+                        />
+                        <input
+                            type="number"
+                            value={newBucket.percentage || ''}
+                            onChange={(e) => setNewBucket(prev => ({ ...prev, percentage: parseFloat(e.target.value) || 0 }))}
+                            className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
+                            placeholder="Percentage (%)"
+                        />
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={addNewBucket}
+                                className="px-3 py-1 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity text-sm"
+                            >
+                                Add
+                            </button>
+                            <button
+                                onClick={() => setShowNewBucketForm(false)}
+                                className="px-3 py-1 bg-gray-100 text-[#10492A] rounded-xl hover:bg-gray-200 text-sm"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+  
+  <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-6 border border-pink-200">
+    <h2 className="text-xl font-semibold text-[#10492A] mb-4">Spending Distribution</h2>
+    <div className="h-4 bg-[#A6AAAE] rounded-full overflow-hidden">
+        {budget.buckets.map(bucket => (
+            <div
+                key={bucket.id}
+                style={{
+                    width: `${bucket.percentage}%`,
+                    height: '100%',
+                    float: 'left',
+                    backgroundColor: bucket.color
+                }}
+                className="transition-all duration-300"
+            />
+        ))}
+    </div>
+</div>
           </div>
         </div>
       </div>

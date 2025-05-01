@@ -1,6 +1,6 @@
 import express from 'express';
 import { register, login, refresh, logout } from '../controllers/user_auth.js';
-import { getBudget, updateBudget, updateBudgetCategory, deleteBudgetCategory } from '../controllers/accessdata.js';
+import { getBudgets, createBudgets, updateBudgets, deleteBudgets } from '../controllers/accessdata.js';
 import { auth } from '../middleware/auth.js';
 const router = express.Router();
 
@@ -11,10 +11,12 @@ router.post('/auth/refresh', refresh);
 router.post('/auth/logout', logout);
 
 
-// /api/budgets (protected)
-router.get('/api/budgets', auth, getBudget);
-router.post('/api/budgets/save', auth, updateBudget);
-router.put('/api/budgets/category/update', auth, updateBudgetCategory);
-router.delete('/api/budgets/category/delete', auth, deleteBudgetCategory);
+// /budgets  (protected)
+router.get('/api/budgets', auth, getBudgets);
+router.post('/api/budgets', auth, createBudgets);
+router.put('/api/budgets/:id', auth, updateBudgets);
+router.delete('/api/budgets/:id', auth, deleteBudgets);
+// router.get('/api/budgets/user/:userId', auth, getBudgetsByUserId);
+
 
 export default router;

@@ -5,11 +5,9 @@ import BudgetPage from './BudgetPage';
 import SignUp from './SignupPage';
 import SignIn from './SigninPage';
 import Setup from './SetupPage';
-
-import SetupStepTwo from './SetupPage2';
-import SetupStepThree from './SetupPage3';
 import Layout from './layouts/layout';
-import { AuthProvider } from './AuthContext'; // Adjust the import path as necessary
+import { AuthProvider } from './AuthContext';
+
 
 function App() {
   return (
@@ -20,10 +18,7 @@ function App() {
           <Route path="/signUp" element={<Layout><SignUp /></Layout>} />
           <Route path="/signIn" element={<Layout><SignIn /></Layout>} />
           <Route path="/budget" element={<Layout><BudgetPage /></Layout>} />
-          <Route path="/setuptwo" element={<Layout><SetupStepTwo /></Layout>} />
-          <Route path="/setupthree" element={<Layout><SetupStepThree /></Layout>} />
           <Route path="/" element={<Layout><LandingPage /></Layout>} />
-
         </Routes>
       </Router>
     </AuthProvider>
