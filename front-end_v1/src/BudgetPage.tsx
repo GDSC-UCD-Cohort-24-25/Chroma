@@ -12,71 +12,58 @@ interface Budget {
   interface BucketType {
     id: string;
     name: string;
-    amount: number;
-    percentage: number;
+    budgetedAmount: number; 
+    spent: number;          
+    percentage: number;     
     icon: string;
-    recommendations: string[];
     color: string;
-  }
+}
   
   const defaultBuckets: BucketType[] = [
     {
       id: '1',
       name: 'Rent',
-      amount: 1000,
+      budgetedAmount: 2500,
+      spent: 2000,
       percentage: 20,
       icon: 'Home',
-      recommendations: [
-        'Fixed rent',
-      ],
       color: '#8FB6B0' //blue
     },
     {
       id: '2',
       name: 'Fun & Vibes',
-      amount: 0,
-      percentage: 20,
+      budgetedAmount: 200,
+      spent: 50,
+      percentage: 30,
       icon: 'Gamepad2',
-      recommendations: [
-        'empty for now',
-         '',
-      ],
       color: '#EEAB8C' // orange
     },
     {
       id: '3',
       name: 'Shopping Sprees',
-      amount: 0,
-      percentage: 15,
+      budgetedAmount: 200,
+      spent: 100,
+      percentage: 20,
       icon: 'ShoppingBag',
-      recommendations: [
-        'empty for now',
-         '',
-      ],
       color: '#C18BC1' //purple
     },
     {
       id: '4',
       name: 'Getting Around',
-      amount: 0,
+      budgetedAmount: 100,
+      spent: 25,
       percentage: 15,
       icon: 'Car',
-      recommendations: [
-        'empty for now',
-         '',
-      ],
       color: '#F3DFA1' // yellow
     },
+    
     {
       id: '5',
       name: 'Coffee & Sips',
-      amount: 0,
+      budgetedAmount: 50,
+      spent: 10,
       percentage: 10,
       icon: 'Coffee',
-      recommendations: [
-        'empty for now',
-         '',
-      ],
       color: '#FFC9DE' //  pink
     }
   ];
@@ -86,21 +73,26 @@ interface Budget {
     Gamepad2: <Gamepad2 className="w-6 h-6" />,
     ShoppingBag: <ShoppingBag className="w-6 h-6" />,
     Car: <Car className="w-6 h-6" />,
-    Coffee: <Coffee className="w-6 h-6" />,
+    Coffee: <Coffee className="ww-6 h-6" />,
     Home: <Home className="w-6 h-6" />
   };
   
   function BudgetPage() {
     const [budget, setBudget] = useState<Budget>({
-      total: 0,
+      total: 5000,
       buckets: defaultBuckets
     });
     const [showNewBucketForm, setShowNewBucketForm] = useState(false);
     const [newBucket, setNewBucket] = useState({
       name: '',
-      percentage: 0
-    });
+      budgetedAmount: 0
+  });
+    
     const [error, setError] = useState<string | null>(null);
+    const [spendingAmount, setSpendingAmount] = useState<number | null>(null);
+    const [selectedBucketId, setSelectedBucketId] = useState<string | null>(null);
+    const [showAddSpendingForm, setShowAddSpendingForm] = useState(false);
+
   
     useEffect(() => {
       // Fetch budget data from the backend when the component mounts
@@ -108,9 +100,14 @@ interface Budget {
         try {
           const data = await fetchUserBudget(); // Fetch budgets from the backend
           if (data && data.buckets) {
-              setBudget({
-                  total: data.total || 0, buckets: data.buckets || []
-              });
+            setBudget({
+              total: data.total || 0,
+              buckets: data.buckets.map((b: any) => ({ 
+                  ...b,
+                  spent: b.spent || 0,
+                  budgetedAmount: b.budgetedAmount || (b.percentage / 100) * (data.total || 0),
+              }))
+          });
           }
         } catch (error: any) {
             setError(error.message || 'An error occurred while fetching budgets.');
@@ -122,7 +119,7 @@ interface Budget {
     const updateBucketAmounts = () => {
       const updatedBuckets = budget.buckets.map(bucket => ({
         ...bucket,
-        amount: (bucket.percentage / 100) * budget.total
+        budgetedAmount: (bucket.percentage / 100) * budget.total
       }));
       setBudget(prev => ({ ...prev, buckets: updatedBuckets }));
     };
@@ -133,59 +130,57 @@ interface Budget {
       updateBucketAmounts();
     };
   
-    const handlePercentageChange = (id: string, newPercentage: number) => {
-      const updatedBuckets = budget.buckets.map(bucket =>
-        bucket.id === id ? { ...bucket, percentage: newPercentage } : bucket
-      );
-      setBudget(prev => ({ ...prev, buckets: updatedBuckets }));
-      updateBucketAmounts();
-    };
-  
     const addNewBucket = async () => {
-      if (newBucket.name && newBucket.percentage) {
-        // Checks for empty name and percentage range
+      if (newBucket.name && newBucket.budgetedAmount > 0) {
+          // Checks for empty name and budgeted amount range
           if (!newBucket.name.trim()) {
-            alert('Bucket name cannot be empty.');
-            return;
+              alert('Bucket name cannot be empty.');
+              return;
           }
-          if (newBucket.percentage <= 0 || newBucket.percentage > 100) {
-            alert('Percentage must be between 1 and 100.');
-            return;
+          if (newBucket.budgetedAmount <= 0 || newBucket.budgetedAmount > budget.total) {
+              alert('Budgeted amount must be greater than zero and less than or equal to the total budget.');
+              return;
           }
-      
-          const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0) + newBucket.percentage;
+  
+          // Calculate the new bucket's percentage of the total budget
+          const newPercentage = (newBucket.budgetedAmount / budget.total) * 100;
+  
+          // Recalculate the total percentage of all buckets including the new one
+          const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0) + newPercentage;
           if (totalPercentage > 100) {
-            alert('Total percentage cannot exceed 100%.');
-            return;
+              alert('Total percentage of all categories cannot exceed 100%.');
+              return;
           }
-
-        const newId = (budget.buckets.length + 1).toString();
-        const newBucketItem: BucketType = {
-          id: newId,
-          name: newBucket.name,
-          amount: (newBucket.percentage / 100) * budget.total,
-          percentage: newBucket.percentage,
-          icon: 'Home',
-          recommendations: ['Customize!'],
-          color: '#FFD1DC' // Default new bucket color
-        };
-        const updatedBudget = {
-          ...budget,
-          buckets: [...budget.buckets, newBucketItem],
-      };
-
-      setBudget(updatedBudget);
-      setNewBucket({ name: '', percentage: 0 });
-      setShowNewBucketForm(false);
-
-      try {
-        await saveBudget(updatedBudget);
-        alert('Bucket added successfully!');
-      } catch (err: any) {
-          alert(err.message || 'Failed to save the bucket.');
+  
+          const newId = (budget.buckets.length + 1).toString();
+          const newBucketItem: BucketType = {
+              id: newId,
+              name: newBucket.name,
+              budgetedAmount: newBucket.budgetedAmount,
+              spent: 0,
+              percentage: newPercentage,
+              icon: 'Home',
+              color: '#FFD1DC' // Default new bucket color
+          };
+          const updatedBudget = {
+              ...budget,
+              buckets: [...budget.buckets, newBucketItem],
+          };
+  
+          setBudget(updatedBudget);
+          setNewBucket({ name: '', budgetedAmount: 0 }); // Reset budgetedAmount
+          setShowNewBucketForm(false);
+  
+          try {
+              await saveBudget(updatedBudget);
+              alert('Bucket added successfully!');
+          } catch (err: any) {
+              alert(err.message || 'Failed to save the bucket.');
+          }
+      } else {
+          alert('Please enter a category name and a budget amount greater than zero.');
       }
-  }
-    };
+  };
   
     const deleteBucket = async (id: string) => {
       if (id === '1') {
@@ -210,6 +205,24 @@ interface Budget {
           alert(err.message || 'Failed to delete the bucket.');
       }
     };
+
+    const handleAddSpending = async (amount: number, bucketId: string) => {
+      const updatedBuckets = budget.buckets.map(bucket =>
+          bucket.id === bucketId ? { ...bucket, spent: bucket.spent + amount } : bucket
+      );
+      const updatedBudget = { ...budget, buckets: updatedBuckets };
+      setBudget(updatedBudget);
+      setSpendingAmount(null);
+      setSelectedBucketId(null);
+      setShowAddSpendingForm(false);
+      try {
+          await saveBudget(updatedBudget); // Assuming your saveBudget can handle updates too
+          alert('Spending added successfully!');
+      } catch (err: any) {
+          alert(err.message || 'Failed to save spending.');
+      }
+  };
+
   
     const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0);
   
@@ -220,13 +233,18 @@ interface Budget {
         >
           <div >
   
-            <div className="bg-[#B3D5C2] rounded-2xl shadow-lg p-6 mb-8 ">
-              <div className="flex items-center mb-2">
-                <PieChart className="w-6 h-6 text-[#10492A] mr-2 " />
-                <h2 className="text-xl font-semibold text-gray-700">Budget: ${budget.total}</h2>
-              </div>
-             
-            </div>
+         <div className="bg-[#B3D5C2] rounded-xl shadow-lg p-8 mb-8 flex items-center justify-between">
+    <div className="flex items-center mb-2">
+        <PieChart className="w-6 h-6 text-[#10492A] mr-2 " />
+        <h2 className="text-xl font-semibold text-gray-700">Budget: ${budget.total}</h2>
+    </div>
+    <button
+        onClick={() => setShowNewBucketForm(true)}
+        className="px-4 py-2 bg-[#10492A] text-white rounded-xl hover:opacity-90 transition-opacity text-sm font-semibold"
+    >
+        Add New Category
+    </button>
+</div>
   
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {budget.buckets.map(bucket => (
@@ -246,8 +264,10 @@ interface Budget {
     </button>
 
     <button
-    //NEED TO MAKE THIS ADD SPENDING
-    onClick={() => setShowNewBucketForm(true)}
+    onClick={() => {
+        setSelectedBucketId(bucket.id);
+        setShowAddSpendingForm(true);
+    }}
     className="absolute bottom-5 right-5 text-[#10492A] hover:text-pink-600"
 >
     <Plus className="w-5 h-5" />
@@ -256,28 +276,19 @@ interface Budget {
 
   </div>
 )}
-                  </div>
-                  
-               
-                  <div className="absolute bottom-6 right-12">
-        <MiniPieChart percentage={bucket.percentage} color={bucket.color} size={75} strokeWidth={8} />
-        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">
-           
+        </div>
+        <div className="absolute bottom-6 right-12">
+        <MiniPieChart percentage={(bucket.spent / bucket.budgetedAmount) * 100 || 0} color={bucket.color} size={75}  />
+        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">  
         </span>
     </div>
   
-                  <div className="mt-4">
-                    <h4 className="font-medium text-gray-700 mb-2">Recommended Places:</h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      {bucket.recommendations.map((rec, index) => (
-                        <li key={index} className="list-none ml-4 before:content-['»'] before:mr-2">{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  
-
-                  
+    <div className="mt-2">
+    <h4 className="text-sm font-medium text-gray-700 mb-1">Budget:</h4>
+    <p className="text-md font-semibold text-[#10492A]">${bucket.budgetedAmount.toFixed(2)}</p>
+    <h4 className="text-sm font-medium text-gray-700 mt-1">Spent:</h4>
+    <p className="text-md font-semibold text-blue-500">${bucket.spent.toFixed(2)}</p>
+</div>
 
                   
                 </div>
@@ -286,19 +297,74 @@ interface Budget {
   
             </div>
 
-                        {/*adds spending*/}
-            {showNewBucketForm && (
+    {/*adds spending*/}
+    {showAddSpendingForm && selectedBucketId && (
+    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#DEE9DC] rounded-2xl shadow-lg p-6 border border-green-200 z-50">
+        <h3 className="text-lg font-semibold text-[#10492A] mb-4">Add Spending to "{budget.buckets.find(b => b.id === selectedBucketId)?.name}"</h3>
+        <input
+            type="number"
+            value={spendingAmount || ''}
+            onChange={(e) => setSpendingAmount(parseFloat(e.target.value) || null)}
+            className="w-full px-4 py-2 rounded-xl border border-green-200 focus:ring-2 focus:ring-green-400 focus:border-transparent mb-4"
+            placeholder="Amount to Add"
+        />
+        <div className="flex space-x-4">
+            <button
+                onClick={() => {
+                    if (spendingAmount !== null && selectedBucketId) {
+                        const updatedBuckets = budget.buckets.map(b =>
+                            b.id === selectedBucketId ? { ...b, spent: b.spent + spendingAmount } : b
+                        );
+                        const updatedBudget = { ...budget, buckets: updatedBuckets };
+                        setBudget(updatedBudget);
+                        setSpendingAmount(null);
+                        setSelectedBucketId(null);
+                        setShowAddSpendingForm(false);
+                        saveBudget(updatedBudget);
+                    }
+                }}
+                className="px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
+            >
+                Add
+            </button>
+            <button
+                onClick={() => {
+                    setSpendingAmount(null);
+                    setSelectedBucketId(null);
+                    setShowAddSpendingForm(false);
+                }}
+                className="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200"
+            >
+                Cancel
+            </button>
+        </div>
+    </div>
+)}
+  
+      
+       {/*adds new bucket*/}
+ {/* "Add New Category" form */}
+{showNewBucketForm && (
     <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-4 mb-8 border border-pink-200 w-full md:w-1/2 lg:w-1/3">
-        <h3 className="text-md font-semibold text-[#10492A] mb-2">Add Spending:</h3>
+        <h3 className="text-md font-semibold text-[#10492A] mb-2">Add New Category:</h3>
         <div className="space-y-2">
-            
+            <input
+                type="text"
+                value={newBucket.name}
+                onChange={(e) => setNewBucket(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
+                placeholder="Category Name:"
+            />
             <input
                 type="number"
+                value={newBucket.budgetedAmount || ''}
+                onChange={(e) => setNewBucket(prev => ({ ...prev, budgetedAmount: parseFloat(e.target.value) || 0 }))}
                 className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
-                placeholder="Amount"
+                placeholder="$Budgeted Amount:"
             />
             <div className="flex space-x-2">
                 <button
+                    onClick={addNewBucket}
                     className="px-3 py-1 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity text-sm"
                 >
                     Add
@@ -313,42 +379,6 @@ interface Budget {
         </div>
     </div>
 )}
-  
-      
-       {/*adds new bucket*/}
-             <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-4 mb-8 border border-pink-200 w-full md:w-1/2 lg:w-1/3">
-                    <h3 className="text-md font-semibold text-[#10492A] mb-2">Add New Category:</h3>
-                    <div className="space-y-2">
-                        <input
-                            type="text"
-                            value={newBucket.name}
-                            onChange={(e) => setNewBucket(prev => ({ ...prev, name: e.target.value }))}
-                            className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
-                            placeholder="Category Name"
-                        />
-                        <input
-                            type="number"
-                            value={newBucket.percentage || ''}
-                            onChange={(e) => setNewBucket(prev => ({ ...prev, percentage: parseFloat(e.target.value) || 0 }))}
-                            className="w-full px-2 py-1 rounded-xl border border-pink-200 focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
-                            placeholder="Percentage (%)"
-                        />
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={addNewBucket}
-                                className="px-3 py-1 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity text-sm"
-                            >
-                                Add
-                            </button>
-                            <button
-                                onClick={() => setShowNewBucketForm(false)}
-                                className="px-3 py-1 bg-gray-100 text-[#10492A] rounded-xl hover:bg-gray-200 text-sm"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
   
   <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-6 border border-pink-200">
     <h2 className="text-xl font-semibold text-[#10492A] mb-4">Spending Distribution</h2>
