@@ -56,6 +56,7 @@ interface Budget {
       icon: 'Car',
       color: '#F3DFA1' // yellow
     },
+    
     {
       id: '5',
       name: 'Coffee & Sips',
