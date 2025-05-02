@@ -1,106 +1,88 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
+import { registerUser } from '../services/apiService';
+import { useAuth } from './AuthContext'; // Adjust the import path as necessary
 
-const Setup = () => {
-  const [monthlyBudget, setMonthlyBudget] = useState('');
-  const [numCategories, setNumCategories] = useState('');
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-
-    e.preventDefault();
-    try {
-      const budgetData = {
-        total: parseFloat(monthlyBudget) || -1, // Total monthly budget
-        buckets: Array.from({ length: parseInt(numCategories) || 0 }, (_, index) => ({
-          id: new Date().toISOString(),  // Using ISO string as a unique ID for each bucket
-          name: `Category ${index + 1}`,
-          amount: 0,
-          percentage: 0,
-          icon: 'default_icon',
-          recommendations: [],
-          color: '#3498db',  // Default color
-        })),
-      };
-
-      const res = await saveBudget(budgetData); // Save budget to the backend
-      
-      console.log(res); // Log the response for debugging
-      console.log('Budget saved successfully');
-      navigate('/budget'); // Navigate to the budget page
+const SignUp = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const { login } = useAuth(); // Use the login function from AuthContext
     
-    } catch (error: any) {
-      alert(error.message || 'An error occurred while saving the budget.');
-    }
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log('Email:', email); //debug
+        console.log('Password:', password);
 
-  localStorage.setItem('monthlyBudget', monthlyBudget);
-    localStorage.setItem('numCategories', numCategories);
+        try {
+            const res = await registerUser(email, password);
+            login();
+            //console.log('Navigate to setup'); //debug
+            navigate('/setup');
+        } catch (error: any) {
+            setError(error.message || 'Failed to sign up. Please try again.1');
+            //console.error(error); // Log the error for debugging
+            
+        }
+    };
 
-    console.log('Monthly Budget:', monthlyBudget);
-    console.log('Number of Categories:', numCategories);
-    navigate('/setuptwo');
-
-    setMonthlyBudget('');
-    setNumCategories('');
-
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F4F4EA]">
-
-      <div className="max-w-md w-full bg-white p-8 rounded-3xl shadow-xl backdrop-blur-md">
-        <h2 className="text-3xl font-bold text-transparent bg-clip-text p-4 bg-[#92BAA4] text-center">
-          Welcome to CowCulator!
-        </h2>
-        <p className="text-lg text-gray-700 text-center mb-6">
-          Your budgeting assistant through your busy life as an Aggie.
-        </p>
-        
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Monthly Budget Input */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              What's your total monthly budget? <br />
-              <span className="text-sm text-gray-500">Don’t worry, you can always adjust this later.</span>
-            </label>
-            <input
-              type="number"
-              value={monthlyBudget}
-              onChange={(e) => setMonthlyBudget(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-              placeholder="Enter amount"
-              required
+    return (
+        <div className="min-h-screen bg-[#F4F4EA] p-6 flex items-center justify-center">
+    <div className="max-w-4xl mx-auto bg-white/90 rounded-3xl p-8 shadow-xl backdrop-blur-md flex">
+        {/* Left Side: Logo */}
+        <div className="w-1/2 flex justify-center">
+            <img
+                src="/assets/logo.png"
+                alt="Cow Budget"
+                className="max-w-full h-auto rounded-xl"
             />
-          </div>
+        </div>
 
-          {/* Budget Categories Input */}
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
-              Let's set up your budget categories. <br />
-              How many would you like to start with?
-            </label>
-            <input
-              type="number"
-              value={numCategories}
-              onChange={(e) => setNumCategories(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-              placeholder="Enter number"
-              required
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
-          >
-            Continue
-          </button>
-        </form>
-      </div>
+        {/* Right Side: Sign-up Form */}
+        <div className="w-1/2 p-8 pr-16 flex flex-col pt-20">
+            <h2 className="text-3xl font-bold bg-clip-text text-[#92BAA4] mb-6 text-center">
+                 Create an account!
+            </h2>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    placeholder="Full Name"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                />
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                />
+                <button
+                    type="submit"
+                    className="w-full px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
+                >
+                    Sign Up
+                </button>
+            </form>
+            {error && <p className="text-red-500 text-center">{error}</p>}
+            <p className="text-gray-700 text-sm mt-4 text-center">
+                Already have an account?{' '}
+                <Link to="/signin" className="text-[#92BAA4] hover:underline">
+                    Sign In
+                </Link>
+            </p>
+        </div>
     </div>
-  );
+</div>
+    );
 };
 
-export default Setup;
+export default SignUp;
