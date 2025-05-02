@@ -18,9 +18,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/setup" element={<Setup />} />
-   
-
-
         <Route path="/setup" element={ <Layout><Setup /></Layout>}/>
         <Route path="/signUp" element={<Layout><SignUp /></Layout>} />
         <Route path="/signIn" element={<Layout><SignIn /></Layout>} />
