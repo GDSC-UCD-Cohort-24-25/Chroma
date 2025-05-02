@@ -11,4 +11,4 @@ npm run dev
 ```
 
 ## Backend:
-### Hey wahsup
+### linking backend to frontend 2.0
