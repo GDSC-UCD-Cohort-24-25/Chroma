@@ -1,88 +1,211 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/apiService';
-import { useAuth } from './AuthContext'; // Adjust the import path as necessary
+import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
 
-const SignUp = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const { login } = useAuth(); // Use the login function from AuthContext
-    
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Email:', email); //debug
-        console.log('Password:', password);
+const Setup = () => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
 
-        try {
-            const res = await registerUser(email, password);
-            login();
-            //console.log('Navigate to setup'); //debug
-            navigate('/setup');
-        } catch (error: any) {
-            setError(error.message || 'Failed to sign up. Please try again.1');
-            //console.error(error); // Log the error for debugging
-            
-        }
-    };
+  const [monthlyBudget, setMonthlyBudget] = useState('');
+  const [numCategories, setNumCategories] = useState('');
+  const [categoryNames, setCategoryNames] = useState<string[]>([]);
+  const [budgetValues, setBudgetValues] = useState<string[]>([]);
+  const [expenseValues, setExpenseValues] = useState<string[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
 
-    return (
-        <div className="min-h-screen bg-[#F4F4EA] p-6 flex items-center justify-center">
-    <div className="max-w-4xl mx-auto bg-white/90 rounded-3xl p-8 shadow-xl backdrop-blur-md flex">
-        {/* Left Side: Logo */}
-        <div className="w-1/2 flex justify-center">
-            <img
-                src="/assets/logo.png"
-                alt="Cow Budget"
-                className="max-w-full h-auto rounded-xl"
-            />
-        </div>
+  // Move to next step with validation
+  const goToStepTwo = () => {
+    if (!monthlyBudget || !numCategories || parseInt(numCategories) <= 0) return;
+    setCategoryNames(new Array(parseInt(numCategories)).fill(''));
+    setErrors(new Array(parseInt(numCategories)).fill(''));
+    setStep(2);
+  };
 
-        {/* Right Side: Sign-up Form */}
-        <div className="w-1/2 p-8 pr-16 flex flex-col pt-20">
-            <h2 className="text-3xl font-bold bg-clip-text text-[#92BAA4] mb-6 text-center">
-                 Create an account!
+
+  const goToStepThree = () => {
+    const hasEmpty = categoryNames.some(name => name.trim() === '');
+    if (hasEmpty) {
+      setErrors(categoryNames.map(name => name.trim() === '' ? 'Category name is required.' : ''));
+      return;
+    }
+    setBudgetValues(new Array(categoryNames.length).fill(''));
+    setExpenseValues(new Array(categoryNames.length).fill(''));
+    setErrors(new Array(categoryNames.length).fill(''));
+    setStep(3);
+  };
+
+  const handleFinalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem('monthlyBudget', monthlyBudget);
+    localStorage.setItem('numCategories', numCategories);
+    localStorage.setItem('categoryNames', JSON.stringify(categoryNames));
+    localStorage.setItem('budgetValues', JSON.stringify(budgetValues));
+    localStorage.setItem('expenseValues', JSON.stringify(expenseValues));
+    navigate('/budget');
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#F4F4EA] p-6">
+      <div className="max-w-2xl w-full bg-white p-8 rounded-3xl shadow-xl backdrop-blur-md">
+        {step === 1 && (
+          <>
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] text-center mb-4">
+              Welcome to CowCulator!
             </h2>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Full Name"
-                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-                />
-                <button
-                    type="submit"
-                    className="w-full px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
-                >
-                    Sign Up
-                </button>
-            </form>
-            {error && <p className="text-red-500 text-center">{error}</p>}
-            <p className="text-gray-700 text-sm mt-4 text-center">
-                Already have an account?{' '}
-                <Link to="/signin" className="text-[#92BAA4] hover:underline">
-                    Sign In
-                </Link>
+            <p className="text-lg text-gray-700 text-center mb-6">
+              Your budgeting assistant through your busy life as an Aggie.
             </p>
-        </div>
+            <form className="space-y-6">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">
+                  What's your total monthly budget?
+                  <br />
+                  <span className="text-sm text-gray-500">Don’t worry, you can always adjust this later.</span>
+                </label>
+                <input
+                  type="number"
+                  value={monthlyBudget}
+                  onChange={(e) => setMonthlyBudget(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                  placeholder="Enter amount"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">
+                  How many budget categories do you want to start with?
+                </label>
+                <input
+                  type="number"
+                  value={numCategories}
+                  onChange={(e) => setNumCategories(e.target.value)}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                  placeholder="Enter number"
+                  required
+                />
+              </div>
+              <button
+                type="button"
+                onClick={goToStepTwo}
+                className="w-full px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90 transition-opacity"
+              >
+                Continue
+              </button>
+            </form>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] mb-6 text-center">
+              Step 2: Name Your Budget Categories
+            </h2>
+            <form className="space-y-4">
+              {categoryNames.map((name, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <span className="text-lg font-semibold text-gray-700">{index + 1}.</span>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => {
+                      const updated = [...categoryNames];
+                      updated[index] = e.target.value;
+                      setCategoryNames(updated);
+                    }}
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                    placeholder={`Enter name for Category ${index + 1}`}
+                    required
+                  />
+                  {errors[index] && (
+                    <span className="text-red-500 text-sm">{errors[index]}</span>
+                  )}
+                </div>
+              ))}
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="px-6 py-2 bg-gray-300 rounded-xl hover:opacity-90"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={goToStepThree}
+                  className="px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90"
+                >
+                  Continue
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] mb-6 text-center">
+              Step 3: Set Budgets and Expenses
+            </h2>
+            <form className="space-y-4" onSubmit={handleFinalSubmit}>
+              <div className="grid grid-cols-[auto_.5fr_1fr_1fr] items-center gap-4 mb-2">
+                <span></span>
+                <span></span>
+                <span className="text-lg text-center font-semibold text-gray-700">Budget</span>
+                <span className="text-lg text-center font-semibold text-gray-700">Expenses</span>
+              </div>
+              {categoryNames.map((name, index) => (
+                <div key={index}>
+                  <div className="grid grid-cols-[auto_.5fr_1fr_1fr] items-center gap-4">
+                    <span className="text-lg font-semibold text-gray-700">{index + 1}.</span>
+                    <span className="text-lg text-gray-700">{name}:</span>
+                    <input
+                      type="number"
+                      value={budgetValues[index] || ''}
+                      onChange={(e) => {
+                        const updated = [...budgetValues];
+                        updated[index] = e.target.value;
+                        setBudgetValues(updated);
+                      }}
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                      placeholder="Budget"
+                      required
+                    />
+                    <input
+                      type="number"
+                      value={expenseValues[index] || ''}
+                      onChange={(e) => {
+                        const updated = [...expenseValues];
+                        updated[index] = e.target.value;
+                        setExpenseValues(updated);
+                      }}
+                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
+                      placeholder="Spending"
+                      required
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-between mt-6">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="px-6 py-2 bg-gray-300 rounded-xl hover:opacity-90"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90"
+                >
+                  Take me to my dashboard!
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </div>
     </div>
-</div>
-    );
+  );
 };
 
-export default SignUp;
+export default Setup;
