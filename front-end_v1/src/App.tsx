@@ -10,6 +10,7 @@ import Setup from './SetupPage';
 // import SetupStepThree from './SetupPage3';
 import Layout from './layout';
 import { AuthProvider } from './AuthContext';
+import ProfilePage from './Profile';
 
 
 function App() {
@@ -18,9 +19,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/setup" element={<Setup />} />
-      
-
-
+        <Route path="/Profile" element={<Layout><ProfilePage /></Layout>} />
         <Route path="/setup" element={ <Layout><Setup /></Layout>}/>
         <Route path="/signUp" element={<Layout><SignUp /></Layout>} />
         <Route path="/signIn" element={<Layout><SignIn /></Layout>} />
