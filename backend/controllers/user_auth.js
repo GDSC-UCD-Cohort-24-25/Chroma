@@ -165,6 +165,9 @@ export const getTotal = async (req, res) => {
     }
 }
 
+
+
+
 // export const deleteUser = async (req, res) => {
 //     try {
 //         const { email } = req.body;
