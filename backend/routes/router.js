@@ -12,7 +12,7 @@ router.post('/auth/logout', logout);
 // router.get('/auth/checkstatus', auth, checkstatus)
 router.get('/api/checkstatus', checkstatus); // No middleware
 router.post('/api/settotal', auth, setTotal);
-router.get('/api/gettotal', auth, getTotal);s
+router.get('/api/gettotal', auth, getTotal);
 
 
 // /budgets  (protected)
