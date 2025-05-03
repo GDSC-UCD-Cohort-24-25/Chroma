@@ -25,7 +25,6 @@ export const register = async (req, res) => {
         const payload = {
             user: {
                 id: user._id,
-                name: user.name,
             }
         }
         const accessToken = generateAccessToken(payload);   // short lived: 2h
@@ -120,11 +119,15 @@ export const checkstatus = async (req, res) => {
         if (!accessToken) {
             return res.status(401).json({ success:false, message: "No access token, please log in again" });
         }
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => async () => {
             if (err) {
                 return res.status(403).json({ success:false, message: "Invalid access token, please log in again" });
             }
-            res.status(200).json({ success:true, message: "User is logged in", name: decoded.user.name});
+            const user = await User.findById(decoded.user.id);
+            if (!user) {
+                return res.status(404).json({ success:false, message: "User not found" });
+            }
+            res.status(200).json({ success:true, message: "User is logged in", name: user.name, email: user.email, total: user.total });
         });
     } catch (error) {
         return res.status(400).json({ success:false, message: error.message });
@@ -142,6 +145,20 @@ export const setTotal = async (req, res) => {
         user.total = total;
         await user.save();
         res.status(200).json({ success:true, message: "Total updated successfully", total: user.total });
+    }
+    catch (error) {
+        res.status(400).json({ success:false, message: error.message });
+    }
+}
+
+export const getTotal = async (req, res) => {
+    try {
+        const userId = req.user.id;  // req.user is attached in auth middleware
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success:false, message: "User not found" });
+        }
+        res.status(200).json({ success:true, message: "Total retrieved successfully", total: user.total });
     }
     catch (error) {
         res.status(400).json({ success:false, message: error.message });

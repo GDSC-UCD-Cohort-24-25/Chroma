@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, refresh, logout, checkstatus, setTotal } from '../controllers/user_auth.js';
+import { register, login, refresh, logout, checkstatus, setTotal, getTotal } from '../controllers/user_auth.js';
 import { getBudgets, createBudgets, updateBudgets, deleteBudgets } from '../controllers/accessdata.js';
 import { auth } from '../middleware/auth.js';
 const router = express.Router();
@@ -11,7 +11,8 @@ router.post('/auth/refresh', refresh);
 router.post('/auth/logout', logout);
 // router.get('/auth/checkstatus', auth, checkstatus)
 router.get('/api/checkstatus', checkstatus); // No middleware
-router.post('/api/settotal', auth, setTotal); // No middleware
+router.post('/api/settotal', auth, setTotal);
+router.get('/api/gettotal', auth, getTotal);
 
 
 // /budgets  (protected)
