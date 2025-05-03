@@ -6,10 +6,10 @@ import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
     try {
-        const { email, password, total } = req.body;
+        const { email, password, name } = req.body;
         // Validate
-        if (!email || !password) {
-            return res.status(400).json({success:false, message:"Please provide email and password"});
+        if (!email || !password || !name) {
+            return res.status(400).json({success:false, message:"Please provide email, password, and name"});
         }
         // Check if user already exists
         const existingUser = await User.findOne({ email: email });
@@ -19,7 +19,7 @@ export const register = async (req, res) => {
         // Hash the password, save user to db
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const user = await User.create({ email:email, password:hashedPassword, total:total });    // create: new + save
+        const user = await User.create({ email:email, password:hashedPassword, name:name });    // create: new + save
 
         // Create JWT token
         const payload = {
@@ -112,6 +112,10 @@ export const logout = async (req, res) => {
     res.clearCookie('refreshToken');
     res.status(200).json({ success:true, message: "Logged out successfully" });
 };
+
+export const checkstatus = async (req, res) => {
+    pass;
+}
 
 // export const deleteUser = async (req, res) => {
 //     try {
