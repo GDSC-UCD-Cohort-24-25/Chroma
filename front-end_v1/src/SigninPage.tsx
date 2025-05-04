@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+//import { useAuth } from './AuthContext';
 import { loginUser } from '../services/apiService'; // Adjust the import path as necessary
 
 const SignIn = () => {
@@ -9,26 +9,24 @@ const SignIn = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth(); // Use the login function from AuthContext
+    //const { login } = useAuth(); // Use the login function from AuthContext
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        //console.log('Email:', email);
-        //console.log('Password:', password);
         try {
-            const res =await loginUser(email, password); // Call the API service
-            console.log('API Response:', res);
-            login();
-            console.log('navigate to dashboard'); //debug
+          const res = await loginUser(email, password);
+          console.log('API Response:', res);
+      
+          //login();
+            console.log('navigate to dashboard');
             navigate('/budget');
-        
-            
-        } catch (error:any) {
-            setError(error.message || 'Failed to sign up. Please try again.hhhhhhh');
-            console.error(error); // Log the error for debugging
+          
+        } catch (error: any) {
+          setError(error.message || 'Failed to sign in. Please try again.');
+          console.error(error);
         }
-       
       };
+      
         
 
     return (
