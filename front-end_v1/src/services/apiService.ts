@@ -61,9 +61,9 @@ export const logoutUser = async () => {
     }
 };
 
-export const refresh = async () => {
+export const refreshPage = async () => {
     try {
-        console.log('Logging out'); //debug
+        console.log('Refreshing'); //debug
         const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
             method: 'POST',
             headers: {
