@@ -154,6 +154,7 @@ function BudgetPage() {
       
 
       loadBudgets();
+
     }, []);
     
 /* Update bucket amounts when total budget changes */
@@ -320,7 +321,7 @@ function BudgetPage() {
 
             {/*adds spending*/}
           {showNewBucketForm && (
-              <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-4 mb-8 border border-pink-200 w-full md:w-1/2 lg:w-1/3">
+              <div className="bg-[#DEE9DC] rounded-2xl shadow-lg p-4 mb-8 border w-full md:w-1/2 lg:w-1/3">
                   <h3 className="text-md font-semibold text-[#10492A] mb-2">Add Spending:</h3>
                   <div className="space-y-2">
                       
