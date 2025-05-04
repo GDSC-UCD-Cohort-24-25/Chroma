@@ -1,34 +1,38 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-//import { useAuth } from './AuthContext';
-import { loginUser } from '../services/apiService'; // Adjust the import path as necessary
+import { useAuth } from '../layouts/AuthContext';
+import { loginUser } from '../services/apiService';
+import LoadingScreen from '../loadingScreen'
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    //const { login } = useAuth(); // Use the login function from AuthContext
+    const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
         try {
-          const res = await loginUser(email, password);
-          console.log('API Response:', res);
-      
-          //login();
+            const res = await loginUser(email, password);
+            console.log('API Response:', res);
+            login();
             console.log('navigate to dashboard');
+            await new Promise((res) => setTimeout(res, 300)); // delay for loadingscreen
             navigate('/budget');
           
         } catch (error: any) {
           setError(error.message || 'Failed to sign in. Please try again.');
           console.error(error);
         }
+        finally{
+            setLoading(false);
+        }
       };
-      
-        
-
+    if (loading) return <LoadingScreen />;
     return (
         <div className="min-h-screen bg-[#F4F4EA] p-6 flex items-center justify-center">
         <div className="max-w-4xl mx-auto bg-white/90 rounded-3xl p-8 shadow-xl backdrop-blur-md flex">
