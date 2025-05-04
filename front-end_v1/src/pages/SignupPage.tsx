@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/apiService';
-//import { useAuth } from './AuthContext';
+import { useAuth } from '../layouts/AuthContext';
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
@@ -10,7 +10,7 @@ const SignUp = () => {
     const [name, setName] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    //const { login } = useAuth();
+    const { login } = useAuth();
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,7 +20,7 @@ const SignUp = () => {
         try {
             const res = await registerUser(email, password, name);
             console.log('API Response:', res);
-            //login();
+            login();
             console.log('Navigate to setup'); //debug
             navigate('/setup');
             
