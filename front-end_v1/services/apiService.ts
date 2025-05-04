@@ -90,7 +90,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
 }
 
 export const getBudgets = async ()  => {
-    //console.log('Fetching user budget'); //debug
+    console.log('Getting user budget'); //debug
     try{
         const response = await fetch(`${API_BASE_URL}/api/budgets`, {
             method: 'GET',
@@ -104,9 +104,8 @@ export const getBudgets = async ()  => {
         if (!res.success) {
             throw new Error(res.message || 'Failed to fetch user budget.');
         }
-        console.log('Fetched budget data:', res); //debug
-        console.log('Fetched budget data:', res.data); //debug
-        console.log('Fetched user id:', res.userId); //debug
+        //console.log('Fetched budget data:', res.data); //debug
+        //console.log('Fetched user id:', res.userId); //debug
         return res;
 
     } catch (error: any) {
@@ -152,7 +151,7 @@ export const createBudget = async (
 
 export const updateBudget = async (
     budget: { 
-        userId: string;
+        Id: string;
         name: string; 
         amount: number; 
         percentage: number;
@@ -162,11 +161,9 @@ export const updateBudget = async (
         color: string 
     }
 ) => {
-    console.log('Updating budget:', budget.userId); // Debug
-    
-    try {
-        
-        const response = await fetch(`${API_BASE_URL}/api/budgets/${budget.userId}`, {
+    console.log('Updating budget:', budget.Id); // Debug
+    try {        
+        const response = await fetch(`${API_BASE_URL}/api/budgets/${budget.Id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -178,7 +175,7 @@ export const updateBudget = async (
         if (!res.success) {
             throw new Error(res.message || 'Failed to update budget.');
         }
-        console.log('Budget updated successfully:', res); // Debug
+        console.log('Budget updated successfully:'); // Debug
         return res;
     } catch (error: any) {
         console.error('Error updating budget:', error.message); // Debug
@@ -238,9 +235,7 @@ export const setTotalBudget = async (total: number) => {
 
 export const deleteBudget = async (budgetId: string) => {
     console.log('Deleting budget with budgetID:', budgetId); // Debug
-    
     try {
-        
         const response = await fetch(`${API_BASE_URL}/api/budgets/${budgetId}`, {
             method: 'DELETE',
             headers: {
@@ -252,7 +247,7 @@ export const deleteBudget = async (budgetId: string) => {
         if (!res.success) {
             throw new Error(res.message || 'Failed to delete budget.');
         }
-        console.log('Budget deleted successfully:', res); // Debug
+        console.log('Budget deleted successfully:'); // Debug
         return res;
     } catch (error: any) {
         console.error('Error deleting budget:', error.message); // Debug
