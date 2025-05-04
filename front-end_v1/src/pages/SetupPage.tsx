@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createBudget } from '../services/apiService';
 import { setTotalBudget } from '../services/apiService';
 import {colors, iconMap} from '../customizations'
+import { useAuth } from '../layouts/AuthContext';
 
 const Setup = () => {
   const navigate = useNavigate();
@@ -14,7 +15,8 @@ const Setup = () => {
   const [expenseValues, setExpenseValues] = useState<string[]>([]);
   const [iconValues, setIconValues] = useState<string[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
-  
+   const { login } = useAuth();
+
   // Move to next step with validation
   const goToStepTwo = () => {
     if (!monthlyBudget || !numCategories || parseInt(numCategories) <= 0) return;
@@ -75,6 +77,7 @@ const Setup = () => {
         await createBudget(category); // each budget category
       }
       console.log('Budget created successfully');
+      login();
       navigate('/budget');
     
     } catch (error: any) {
