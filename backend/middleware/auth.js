@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const auth = (req, res, next) => {   // authenticate user
     try {
-    //   console.log(req.headers.cookie);  //debug
+       console.log(req.headers.cookie);  //debug
       // const accessToken = req.headers.authorization.split(" ")[1];
       const accessToken = req.cookies.accessToken;
       if (!accessToken) {

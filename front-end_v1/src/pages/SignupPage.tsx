@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/apiService';
-import { useAuth } from './AuthContext'; // Adjust the import path as necessary
+import { useAuth } from '../layouts/AuthContext';
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth(); // Use the login function from AuthContext
+    const { login } = useAuth();
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,10 +18,13 @@ const SignUp = () => {
         console.log('Password:', password);
 
         try {
-            const res = await registerUser(email, password);
+            const res = await registerUser(email, password, name);
+            console.log('API Response:', res);
             login();
-            //console.log('Navigate to setup'); //debug
+            console.log('Navigate to setup'); //debug
             navigate('/setup');
+            
+            
         } catch (error: any) {
             setError(error.message || 'Failed to sign up. Please try again.1');
             //console.error(error); // Log the error for debugging
@@ -47,8 +51,10 @@ const SignUp = () => {
             </h2>
             <form className="space-y-4" onSubmit={handleSubmit}>
                 <input
-                    type="text"
+                    type="name"
                     placeholder="Full Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
                 />
                 <input

@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { saveBudget } from '../services/apiService'; // Adjust the import path as necessary
+import { createBudget } from '../services/apiService';
+import { setTotalBudget } from '../services/apiService';
+import {colors, iconMap} from '../customizations'
+import { useAuth } from '../layouts/AuthContext';
 
 const Setup = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-
   const [monthlyBudget, setMonthlyBudget] = useState('');
   const [numCategories, setNumCategories] = useState('');
   const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [budgetValues, setBudgetValues] = useState<string[]>([]);
   const [expenseValues, setExpenseValues] = useState<string[]>([]);
+  const [iconValues, setIconValues] = useState<string[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
+   const { login } = useAuth();
 
   // Move to next step with validation
   const goToStepTwo = () => {
@@ -21,27 +25,65 @@ const Setup = () => {
     setStep(2);
   };
 
-
   const goToStepThree = () => {
     const hasEmpty = categoryNames.some(name => name.trim() === '');
     if (hasEmpty) {
       setErrors(categoryNames.map(name => name.trim() === '' ? 'Category name is required.' : ''));
       return;
+
     }
     setBudgetValues(new Array(categoryNames.length).fill(''));
     setExpenseValues(new Array(categoryNames.length).fill(''));
+    setIconValues(new Array(categoryNames.length).fill(''));
     setErrors(new Array(categoryNames.length).fill(''));
     setStep(3);
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('monthlyBudget', monthlyBudget);
-    localStorage.setItem('numCategories', numCategories);
-    localStorage.setItem('categoryNames', JSON.stringify(categoryNames));
-    localStorage.setItem('budgetValues', JSON.stringify(budgetValues));
-    localStorage.setItem('expenseValues', JSON.stringify(expenseValues));
-    navigate('/budget');
+    try {
+      const totalBudget = parseFloat(monthlyBudget);
+      if (totalBudget<= 0) {
+        throw new Error('Please enter a valid monthly budget.');
+      }
+      else if (categoryNames.length === 0) {
+        throw new Error('Please enter at least one budget category.');
+      }
+      const categories = categoryNames.map((name, index) => {
+        const budgetAmount = parseFloat(budgetValues[index] || '0');
+        const expenseAmount = parseFloat(expenseValues[index] || '0');
+        const iconKey = iconValues[index];
+        if (isNaN(budgetAmount) || budgetAmount < 0) {
+          throw new Error(`Please enter a valid budget for category "${name}".`);
+        }
+        if (isNaN(expenseAmount) || expenseAmount < 0) {
+          throw new Error(`Please enter a valid expense for category "${name}".`);
+        }
+        return {
+          userId: '',
+          name: name.trim(),
+          amount: budgetAmount,
+          percentage: (budgetAmount / totalBudget) * 100,
+          expense: expenseAmount,
+          icon: iconMap[iconKey] ? iconKey: 'Home',
+          recommendations: [''],
+          color: colors[Math.floor(Math.random() * colors.length)]
+        };
+      });
+
+      await setTotalBudget(totalBudget); //total budget
+      console.log('Total budget created successfully:', totalBudget);
+      for (const category of categories) {
+        await createBudget(category); // each budget category
+      }
+      console.log('Budget created successfully');
+      login();
+      navigate('/budget');
+    
+    } catch (error: any) {
+      alert(error.message || 'An error occurred while saving/creating the budget.');
+    }
+
   };
 
   return (
@@ -152,55 +194,56 @@ const Setup = () => {
                 <span></span>
                 <span className="text-lg text-center font-semibold text-gray-700">Budget</span>
                 <span className="text-lg text-center font-semibold text-gray-700">Expenses</span>
+                <span className="text-center font-semibold">Icon</span>
               </div>
+
               {categoryNames.map((name, index) => (
-                <div key={index}>
-                  <div className="grid grid-cols-[auto_.5fr_1fr_1fr] items-center gap-4">
-                    <span className="text-lg font-semibold text-gray-700">{index + 1}.</span>
-                    <span className="text-lg text-gray-700">{name}:</span>
-                    <input
-                      type="number"
-                      value={budgetValues[index] || ''}
-                      onChange={(e) => {
-                        const updated = [...budgetValues];
-                        updated[index] = e.target.value;
-                        setBudgetValues(updated);
-                      }}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-                      placeholder="Budget"
-                      required
-                    />
-                    <input
-                      type="number"
-                      value={expenseValues[index] || ''}
-                      onChange={(e) => {
-                        const updated = [...expenseValues];
-                        updated[index] = e.target.value;
-                        setExpenseValues(updated);
-                      }}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-400"
-                      placeholder="Spending"
-                      required
-                    />
-                  </div>
-                </div>
-              ))}
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="px-6 py-2 bg-gray-300 rounded-xl hover:opacity-90"
+              <div key={index} className="grid grid-cols-[auto_.5fr_1fr_1fr_1fr] items-center gap-4">
+                <span>{index + 1}.</span>
+                <span>{name}</span>
+                <input
+                  type="number"
+                  value={budgetValues[index] || ''}
+                  onChange={(e) => {
+                    const updated = [...budgetValues];
+                    updated[index] = e.target.value;
+                    setBudgetValues(updated);
+                  }}
+                  className="px-4 py-2 rounded-xl border"
+                  placeholder="Budget"
+                />
+                <input
+                  type="number"
+                  value={expenseValues[index] || ''}
+                  onChange={(e) => {
+                    const updated = [...expenseValues];
+                    updated[index] = e.target.value;
+                    setExpenseValues(updated);
+                  }}
+                  className="px-4 py-2 rounded-xl border"
+                  placeholder="Spending"
+                />
+                <select
+                  value={iconValues[index] || ''}
+                  onChange={(e) => {
+                    const updated = [...iconValues];
+                    updated[index] = e.target.value;
+                    setIconValues(updated);
+                  }}
+                  className="px-2 py-2 rounded-xl border"
                 >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-[#92BAA4] text-white rounded-xl hover:opacity-90"
-                >
-                  Take me to my dashboard!
-                </button>
+                  <option value="">Select Icon</option>
+                  {Object.keys(iconMap).map((key) => (
+                    <option key={key} value={key}>{key}</option>
+                  ))}
+                </select>
               </div>
-            </form>
+            ))}
+            <div className="flex justify-between mt-6">
+              <button type="button" onClick={() => setStep(2)} className="px-6 py-2 bg-gray-300 rounded-xl">Back</button>
+              <button type="submit" className="px-6 py-2 bg-[#92BAA4] text-white rounded-xl">Submit</button>
+            </div>
+          </form>
           </>
         )}
       </div>
