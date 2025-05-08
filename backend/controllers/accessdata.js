@@ -69,7 +69,6 @@ export const deleteBudgets = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;  // req.user is attached in auth middleware
-    await Budget.findByIdAndDelete(id);
     const existingBudget = await Budget.findOne({ _id: id, userId });
     if (!existingBudget) {
       return res.status(404).json({ 
@@ -77,6 +76,7 @@ export const deleteBudgets = async (req, res) => {
         message: "Budget not found or unauthorized" 
       });
     }
+    await Budget.findByIdAndDelete(id);
     res.status(200).json({ success: true, message: "Budget deleted successfully" });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
