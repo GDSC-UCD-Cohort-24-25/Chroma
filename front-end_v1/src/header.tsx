@@ -1,21 +1,58 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { GrClose } from "react-icons/gr";
+import { MdHome, MdDashboard } from "react-icons/md";
+
+function Header() {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="flex h-screen">
+      <aside className={`bg-gray-900 text-white transition-all duration-300 ${open ? "w-60" : "w-20"} flex flex-col px-4 py-5`}>
+        <div className="flex items-center justify-between">
+          {open && <span className="text-xl font-bold">CowCulator</span>}
+          <button onClick={() => setOpen(!open)} className="text-white ml-auto">
+            {open ? <GrClose size={20} /> : <GiHamburgerMenu size={24} />}
+          </button>
+        </div>
+        <nav className="mt-10 space-y-4">
+          <Link to="/" className="flex items-center gap-3 text-gray-300 hover:text-green-400">
+            <MdHome size={24} />
+            {open && <span>Home</span>}
+          </Link>
+          <Link to="/budget" className="flex items-center gap-3 text-gray-300 hover:text-green-400">
+            <MdDashboard size={24} />
+            {open && <span>Dashboard</span>}
+          </Link>
+        </nav>
+      </aside>
+
+      <main className="flex-1 p-6">
+        {/* Your content */}
+      </main>
+    </div>
+  );
+}
+
+export default Header;
+
+
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <header className="flex justify-between items-center w-full p-4 bg-white shadow-md">
+    <header className="flex justify-between items-center w-full px-6 py-3 bg-white shadow-md h-16">
       {/* Logo & Title */}
-      <div className="flex items-center space-x-4">
-        <img
+      <div className="flex items-center space-x-3">
+        {/*<img
           src="/assets/logo.png"
           alt="Cow Budget"
-          className="h-24 w-24 md:h-28 md:w-28 rounded-xl transform scale-110"
-        />
-        <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
+          className="h-12 w-12 rounded-full"
+        /> */}
+        
+        <span className="text-3xl font-bold text-green-600 drop-shadow-sm">
           CowCulator
         </span>
       </div>
@@ -55,4 +92,5 @@ function Header() {
   );
 }
 
-export default Header;
+export { Header };
+
