@@ -3,13 +3,14 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
+    "name": "Adam",
     "email": "example@gmail.com",
     "password": "123456",
     "total": 1000
 }
 
 ###
-POST http://localhost:3000/auth/login
+POST https://chromaserver.onrender.com/auth/login
 Content-Type: application/json
 
 {
@@ -27,32 +28,32 @@ Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjd
 ###
 # accessDB requests:
 GET http://localhost:3000/api/budgets
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgwYjI5ODNiMDNhMWVlMTYwYTZhNDA0In0sImlhdCI6MTc0NTU2MjAyMCwiZXhwIjoxNzQ1NTY5MjIwfQ.1rG-Lq-3_YlFSZGr8xWh08KZUYBiHM54LtnbHVGrI9A
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgxYzY0MDg2NzZkYzhlYzVjNWQ0ZTMxIn0sImlhdCI6MTc0NjY5MTA4MCwiZXhwIjoxNzQ2Njk4MjgwfQ.S_G-JwEiiRTTCOY2JL9dOJ8W5IZ9ZS9QA0igENkn9q0
 
 ###
 POST http://localhost:3000/api/budgets
 Content-Type: application/json
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgwYjI5ODNiMDNhMWVlMTYwYTZhNDA0In0sImlhdCI6MTc0NTU2MjAyMCwiZXhwIjoxNzQ1NTY5MjIwfQ.1rG-Lq-3_YlFSZGr8xWh08KZUYBiHM54LtnbHVGrI9A
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgxYzY0MDg2NzZkYzhlYzVjNWQ0ZTMxIn0sImlhdCI6MTc0NjY5MTA4MCwiZXhwIjoxNzQ2Njk4MjgwfQ.S_G-JwEiiRTTCOY2JL9dOJ8W5IZ9ZS9QA0igENkn9q0
 
 {
-    "name": "testCategory",
+    "name": "catcatcat534dscsdTEST",
     "amount": 100,
     "percentage": 10
 }
 
 ###
-PUT http://localhost:3000/api/budgets/680b2c55b03a1ee160a6a407
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgwYjI5ODNiMDNhMWVlMTYwYTZhNDA0In0sImlhdCI6MTc0NTU2MjAyMCwiZXhwIjoxNzQ1NTY5MjIwfQ.1rG-Lq-3_YlFSZGr8xWh08KZUYBiHM54LtnbHVGrI9A
+PUT http://localhost:3000/api/budgets/681c689deebce16087e450e1
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgxYzY0MDg2NzZkYzhlYzVjNWQ0ZTMxIn0sImlhdCI6MTc0NjY5MTA4MCwiZXhwIjoxNzQ2Njk4MjgwfQ.S_G-JwEiiRTTCOY2JL9dOJ8W5IZ9ZS9QA0igENkn9q0
 Content-Type: application/json
 
 {
     "amount": 120,
-    "percentage": 15
+    "percentage": 20
 }
 
 
 ###
-DELETE http://localhost:3000/api/budgets/680b2c55b03a1ee160a6a407
-Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgwYjI5ODNiMDNhMWVlMTYwYTZhNDA0In0sImlhdCI6MTc0NTU2MjAyMCwiZXhwIjoxNzQ1NTY5MjIwfQ.1rG-Lq-3_YlFSZGr8xWh08KZUYBiHM54LtnbHVGrI9A
+DELETE http://localhost:3000/api/budgets/681c689deebce16087e450e1
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjgxYzY0MDg2NzZkYzhlYzVjNWQ0ZTMxIn0sImlhdCI6MTc0NjY5MTA4MCwiZXhwIjoxNzQ2Njk4MjgwfQ.S_G-JwEiiRTTCOY2JL9dOJ8W5IZ9ZS9QA0igENkn9q0
 Content-Type: application/json
 

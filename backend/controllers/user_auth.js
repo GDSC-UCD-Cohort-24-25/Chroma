@@ -6,10 +6,10 @@ import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
     try {
-        const { email, password, total } = req.body;
+        const { email, password, name } = req.body;
         // Validate
-        if (!email || !password) {
-            return res.status(400).json({success:false, message:"Please provide email and password"});
+        if (!email || !password || !name) {
+            return res.status(400).json({success:false, message:"Please provide email, password, and name"});
         }
         // Check if user already exists
         const existingUser = await User.findOne({ email: email });
@@ -19,12 +19,12 @@ export const register = async (req, res) => {
         // Hash the password, save user to db
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const user = await User.create({ email:email, password:hashedPassword, total:total });    // create: new + save
+        const user = await User.create({ email:email, password:hashedPassword, name:name });    // create: new + save
 
         // Create JWT token
         const payload = {
             user: {
-                id: user._id
+                id: user._id,
             }
         }
         const accessToken = generateAccessToken(payload);   // short lived: 2h
@@ -112,6 +112,61 @@ export const logout = async (req, res) => {
     res.clearCookie('refreshToken');
     res.status(200).json({ success:true, message: "Logged out successfully" });
 };
+
+export const checkstatus = async (req, res) => {
+    try {
+        const accessToken = req.cookies.accessToken;
+        if (!accessToken) {
+            return res.status(401).json({ success:false, message: "No access token, please log in again" });
+        }
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => async () => {
+            if (err) {
+                return res.status(403).json({ success:false, message: "Invalid access token, please log in again" });
+            }
+            const user = await User.findById(decoded.user.id);
+            if (!user) {
+                return res.status(404).json({ success:false, message: "User not found" });
+            }
+            res.status(200).json({ success:true, message: "User is logged in", name: user.name, email: user.email, total: user.total });
+        });
+    } catch (error) {
+        return res.status(400).json({ success:false, message: error.message });
+    }
+}
+
+export const setTotal = async (req, res) => {
+    try {
+        const { total } = req.body;
+        const userId = req.user.id;  // req.user is attached in auth middleware
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success:false, message: "User not found" });
+        }
+        user.total = total;
+        await user.save();
+        res.status(200).json({ success:true, message: "Total updated successfully", total: user.total });
+    }
+    catch (error) {
+        res.status(400).json({ success:false, message: error.message });
+    }
+}
+
+export const getTotal = async (req, res) => {
+    try {
+        const userId = req.user.id;  // req.user is attached in auth middleware
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success:false, message: "User not found" });
+        }
+        res.status(200).json({ success:true, message: "Total retrieved successfully", total: user.total });
+    }
+    catch (error) {
+        res.status(400).json({ success:false, message: error.message });
+    }
+}
+
+
+
 
 // export const deleteUser = async (req, res) => {
 //     try {

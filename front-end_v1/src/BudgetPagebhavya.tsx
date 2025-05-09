@@ -14,8 +14,7 @@ interface Budget {
     name: string;
     budgetedAmount: number; 
     spent: number;          
-    percentage: number;     
-    icon: string;
+    percentage: number;
     color: string;
 }
   
@@ -26,7 +25,6 @@ interface Budget {
       budgetedAmount: 2500,
       spent: 2000,
       percentage: 20,
-      icon: 'Home',
       color: '#8FB6B0' //blue
     },
     {
@@ -35,7 +33,6 @@ interface Budget {
       budgetedAmount: 200,
       spent: 50,
       percentage: 30,
-      icon: 'Gamepad2',
       color: '#EEAB8C' // orange
     },
     {
@@ -44,7 +41,6 @@ interface Budget {
       budgetedAmount: 200,
       spent: 100,
       percentage: 20,
-      icon: 'ShoppingBag',
       color: '#C18BC1' //purple
     },
     {
@@ -53,7 +49,6 @@ interface Budget {
       budgetedAmount: 100,
       spent: 25,
       percentage: 15,
-      icon: 'Car',
       color: '#F3DFA1' // yellow
     },
     
@@ -63,19 +58,9 @@ interface Budget {
       budgetedAmount: 50,
       spent: 10,
       percentage: 10,
-      icon: 'Coffee',
       color: '#FFC9DE' //  pink
     }
   ];
-  
-  const iconMap: { [key: string]: React.ReactNode } = {
-    Utensils: <Utensils className="w-6 h-6" />,
-    Gamepad2: <Gamepad2 className="w-6 h-6" />,
-    ShoppingBag: <ShoppingBag className="w-6 h-6" />,
-    Car: <Car className="w-6 h-6" />,
-    Coffee: <Coffee className="ww-6 h-6" />,
-    Home: <Home className="w-6 h-6" />
-  };
   
   function BudgetPage() {
     const [budget, setBudget] = useState<Budget>({
@@ -159,7 +144,6 @@ interface Budget {
               budgetedAmount: newBucket.budgetedAmount,
               spent: 0,
               percentage: newPercentage,
-              icon: 'Home',
               color: '#FFD1DC' // Default new bucket color
           };
           const updatedBudget = {
@@ -227,13 +211,13 @@ interface Budget {
     const totalPercentage = budget.buckets.reduce((sum, bucket) => sum + bucket.percentage, 0);
   
     return (
+      //NEED TO ADD USER'S NAME
       <div className="min-h-screen bg-[#F4F4EA] p-6">
-        <div 
-          className="max-w-6xl mx-auto"
-        >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl mb-2 p-6 font-semibold text-[#10492A]">Welcome, "Name"!</h2>
           <div >
   
-         <div className="bg-[#B3D5C2] rounded-xl shadow-lg p-8 mb-8 flex items-center justify-between">
+         <div className="bg-[#B3D5C2] rounded-xl shadow-lg p-7 mb-8 flex items-center justify-between">
     <div className="flex items-center mb-2">
         <PieChart className="w-6 h-6 text-[#10492A] mr-2 " />
         <h2 className="text-xl font-semibold text-gray-700">Budget: ${budget.total}</h2>
@@ -251,8 +235,7 @@ interface Budget {
                 <div key={bucket.id} className="relative bg-[#DEE9DC] rounded-2xl shadow-lg p-6 border text-[#10492A] transition-all duration-300">
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center">
-                      {iconMap[bucket.icon]}
-                      <h3 className="text-lg font-semibold text-gray-700 ml-2">{bucket.name}</h3>
+                      <h3 className="text-lg font-semibold text-gray-700">{bucket.name}</h3>
                     </div>
                     {bucket.id !== '1' && (
   <div className="flex items-center space-x-2">
@@ -287,10 +270,8 @@ interface Budget {
     <h4 className="text-sm font-medium text-gray-700 mb-1">Budget:</h4>
     <p className="text-md font-semibold text-[#10492A]">${bucket.budgetedAmount.toFixed(2)}</p>
     <h4 className="text-sm font-medium text-gray-700 mt-1">Spent:</h4>
-    <p className="text-md font-semibold text-blue-500">${bucket.spent.toFixed(2)}</p>
+    <p className="text-md font-semibold text-blue-700">${bucket.spent.toFixed(2)}</p>
 </div>
-
-                  
                 </div>
               ))}
   

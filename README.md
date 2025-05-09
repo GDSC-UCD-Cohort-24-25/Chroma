@@ -11,4 +11,7 @@ npm run dev
 ```
 
 ## Backend:
-### linking backend to frontend 2.0
+### Command to run locally(need to config .env first):
+```
+npm run dev
+```

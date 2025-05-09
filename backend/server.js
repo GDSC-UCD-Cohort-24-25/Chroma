@@ -9,8 +9,7 @@ import userRoutes from './routes/router.js';
 const PORT = process.env.NodeJS_PORT || 3000;
 
 const corsOptions = {
-    // origin: 'http://localhost:3000',  // Your client URL
-    origin: '*',  // Your client URL
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',  // Replace with your frontend URL
     credentials: true,  // Allow cookies to be sent
 };
 
