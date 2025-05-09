@@ -117,20 +117,20 @@ export const checkstatus = async (req, res) => {
     try {
         const accessToken = req.cookies.accessToken;
         if (!accessToken) {
-            return res.status(401).json({ success:false, message: "No access token, please log in again" });
+            res.status(401).json({ success:false, message: "No access token, please log in again" });
         }
         jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => async () => {
             if (err) {
-                return res.status(403).json({ success:false, message: "Invalid access token, please log in again" });
+                res.status(403).json({ success:false, message: "Invalid access token, please log in again" });
             }
             const user = await User.findById(decoded.user.id);
             if (!user) {
-                return res.status(404).json({ success:false, message: "User not found" });
+                res.status(404).json({ success:false, message: "User not found" });
             }
             res.status(200).json({ success:true, message: "User is logged in", name: user.name, email: user.email, total: user.total });
         });
     } catch (error) {
-        return res.status(400).json({ success:false, message: error.message });
+        res.status(400).json({ success:false, message: error.message });
     }
 }
 
