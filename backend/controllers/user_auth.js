@@ -114,23 +114,33 @@ export const logout = async (req, res) => {
 };
 
 export const checkstatus = async (req, res) => {
+    let decoded;
     try {
+        console.log(req.cookies);    //debug
         const accessToken = req.cookies.accessToken;
         if (!accessToken) {
-            res.status(401).json({ success:false, message: "No access token, please log in again" });
+            return res.status(401).json({ success:false, message: "No access token, please log in again" });
         }
-        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => async () => {
+        jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, result) => {
             if (err) {
-                res.status(403).json({ success:false, message: "Invalid access token, please log in again" });
+            return res.status(403).json({ success:false, message: "Invalid access token, please log in again" });
             }
-            const user = await User.findById(decoded.user.id);
-            if (!user) {
-                res.status(404).json({ success:false, message: "User not found" });
-            }
-            res.status(200).json({ success:true, message: "User is logged in", name: user.name, email: user.email, total: user.total });
+            decoded = result;
+            console.log("here: ", decoded);    //debug
         });
     } catch (error) {
-        res.status(400).json({ success:false, message: error.message });
+        return res.status(400).json({ success:false, message: error.message });
+    }
+    try {
+        const user = await User.findById(decoded.user.id);
+        console.log("user: ",user);    //debug
+        if (!user) {
+            return res.status(404).json({ success:false, message: "User not found" });
+        }
+        return res.status(200).json({ success:true, message: "User is logged in", name: user.name, email: user.email, total: user.total });
+    }
+    catch (error) {
+        return res.status(400).json({ success:false, message: error.message });
     }
 }
 
