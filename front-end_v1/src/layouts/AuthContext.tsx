@@ -31,13 +31,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Refresh failed:", err);
     }
   };
-  const controller = new AbortController();
+  /*const controller = new AbortController();
 
   const timeout = setTimeout(() => {
     console.warn('⏱️ checkAuth timed out');
     controller.abort(); //  Cancel the request after 5s
   }, 10000); // 10 seconds
-
+  */
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -48,22 +48,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          signal: controller.signal,
+          //signal: controller.signal,
         });
+        console.log(res);
         const data = await res.json();
-        if (data.success) {
-          setIsAuthenticated(true);
-          console.log('authenticated', data.message);
-        }
-        else{
+        if (!data.success) {
           throw Error('Could not be authenticated');
         }
+        console.log('authenticated', data);
+        setIsAuthenticated(true);
+        
       } catch (err: any) {
-        console.log('Not authenticated', err.message);
+        console.log(err.message);
         await refreshAuth();
         
       } finally {
-        clearTimeout(timeout);
+        //clearTimeout(timeout);
         console.log('loading');
         setLoading(false);
         
@@ -71,10 +71,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     if (!isAuthenticated) checkAuth();
-    return () => {
+    /*return () => {
       clearTimeout(timeout);
       controller.abort();
-    };
+    };*/
 
   }, []);
 
