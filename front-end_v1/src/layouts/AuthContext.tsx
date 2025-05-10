@@ -7,11 +7,13 @@ type AuthContextType = {
   loading: boolean;
   name: string | null;
   total: number;
+  email: string | null;
   login: () => void;
   logout: () => void;
   refreshAuth: () => Promise<void>;
   getName: () => string | null;
   getTotal: () => number;
+  getEmail: () => string | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   
   const refreshAuth = async () => {
@@ -56,6 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         setIsAuthenticated(true);
         setName(data.name || null);
+        setEmail(data.email || null);
         setTotal(data.total);
       } catch (err: any) {
         console.log(err.message);
@@ -80,8 +84,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const getName = () => name;
   const getTotal = () => total;
+  const getEmail = () => email;
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, name, total, login, logout, refreshAuth, getName, getTotal}}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, name, total, email, login, logout, refreshAuth, getName, getTotal, getEmail}}>
       {children}
     </AuthContext.Provider>
   );
