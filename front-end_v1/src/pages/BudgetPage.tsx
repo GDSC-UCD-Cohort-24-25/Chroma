@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Trash2, Plus} from 'lucide-react';
-import { updateBudget, getBudgets, createBudget, deleteBudget, getTotalBudget} from '../services/apiService';
+import { updateBudget, getBudgets, createBudget, deleteBudget, getTotalBudget, refreshPage} from '../services/apiService';
 import {useAuth} from '../layouts/AuthContext'
 import MiniPieChart from '../MiniPieChart';
 import {colors, iconMap} from '../customizations'
@@ -121,13 +121,14 @@ function BudgetPage() {
       color: ''
     });
     const [showEditForm, setShowEditForm] = useState(false);
-    const { getName, getTotal} = useAuth();
+    const { getName, getTotal, isAuthenticated, refreshUserInfo} = useAuth();
 
 /* Fetch budgets on component mount */   
     useEffect(() => {
       const loadBudgets = async () => {
         try {
           // get data and userId from getBudgets
+          await refreshUserInfo();
           const res = await getBudgets();
           setUserId(res.userId);
           const budgetArray = res.data; 
@@ -166,8 +167,9 @@ function BudgetPage() {
           console.error('Error fetching user budget:', error);
         }
       };
-      loadBudgets();
-    }, []);
+      if (isAuthenticated && !budget.name) {
+        loadBudgets();}
+    }, [isAuthenticated]);
    
 
     /* Add new bucket function */  
@@ -368,7 +370,7 @@ function BudgetPage() {
                   {/* Pie Chart */}
                     <div className=" absolute bottom-6 right-12 w-[120px] h-[120px] ">
                       <MiniPieChart percentage={bucket.percentage} color={bucket.color} size={120} />
-                      <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-base font-semibold text-white">
+                      <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl font-semibold text-white">
                         {bucket.percentage.toFixed(0)}%
                       </span>
                     </div>
