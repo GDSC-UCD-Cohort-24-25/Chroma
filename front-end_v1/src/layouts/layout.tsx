@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link , useNavigate } from 'react-router-dom';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { GrClose } from 'react-icons/gr';
-import { MdHome, MdDashboard , MdLogout} from 'react-icons/md';
+import { MdHome, MdDashboard , MdLogout, MdPerson} from 'react-icons/md';
 import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Adjust the import path as necessary
@@ -40,7 +40,7 @@ function Layout({ children }: { children: ReactNode }) {
         <nav className={`mt-10 space-y-4 ${open ? '' : 'items-center mx-auto'}`}>
           <Link to="/" className="flex items-center gap-3 text-white hover:text-white/90 text-lg">
             <MdHome size={30} />
-            {open && <span className="text-lg">Home</span>}
+            {open && <span >Home</span>}
           </Link>
           
           {showDashboardLink && (
@@ -54,13 +54,11 @@ function Layout({ children }: { children: ReactNode }) {
           )}
           {showDashboardLink && (
           <Link
-          //links once we add page
-              //to="/Profile"
                 to="/profile"
               className="flex items-center gap-3 text-white hover:text-white/90 text-lg"
               >
-                <MdDashboard size={30} />
-                {open && <span>Profile</span>}
+                <MdPerson size={30} />
+                {open && <span >Profile</span>}
               
           </Link>
           )}
