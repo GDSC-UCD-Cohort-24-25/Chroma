@@ -12,7 +12,7 @@ export const iconMap: { [key: string]: React.ReactNode } = {
   'Education': <BookOpen className="w-6 h-6" />,
   'Savings': <PiggyBank className="w-6 h-6" />,
   'Electronics': <Laptop className="w-6 h-6" />,
-  'Travel': <Plane />,
+  'Travel': <Plane className="w-6 h-6" />,
 };
 export const colors = [
   '#8FB6B0', // soft teal
