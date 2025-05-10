@@ -5,9 +5,13 @@ import {refreshPage} from '../services/apiService'
 type AuthContextType = {
   isAuthenticated: boolean;
   loading: boolean;
+  name: string | null;
+  total: number;
   login: () => void;
   logout: () => void;
   refreshAuth: () => Promise<void>;
+  getName: () => string | null;
+  getTotal: () => number;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,6 +19,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [name, setName] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
   
   const refreshAuth = async () => {
     try {
@@ -31,13 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Refresh failed:", err);
     }
   };
-  /*const controller = new AbortController();
-
-  const timeout = setTimeout(() => {
-    console.warn('⏱️ checkAuth timed out');
-    controller.abort(); //  Cancel the request after 5s
-  }, 10000); // 10 seconds
-  */
+  
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -48,43 +48,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          //signal: controller.signal,
         });
         console.log(res);
         const data = await res.json();
         if (!data.success) {
           throw Error('Could not be authenticated');
         }
-        console.log('authenticated', data);
         setIsAuthenticated(true);
-        
+        setName(data.name || null);
+        setTotal(data.total);
       } catch (err: any) {
         console.log(err.message);
         await refreshAuth();
         
       } finally {
-        //clearTimeout(timeout);
         console.log('loading');
         setLoading(false);
         
       }
     };
 
-    if (!isAuthenticated) checkAuth();
-    /*return () => {
-      clearTimeout(timeout);
-      controller.abort();
-    };*/
+    checkAuth();
+    
 
   }, []);
 
   const login = () => setIsAuthenticated(true);
   const logout = () => {
       setIsAuthenticated(false);
+      setName(null);
   };
-
+  const getName = () => name;
+  const getTotal = () => total;
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout, refreshAuth}}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, name, total, login, logout, refreshAuth, getName, getTotal}}>
       {children}
     </AuthContext.Provider>
   );
