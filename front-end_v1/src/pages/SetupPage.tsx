@@ -4,6 +4,7 @@ import { createBudget } from '../services/apiService';
 import { setTotalBudget } from '../services/apiService';
 import {colors, iconMap} from '../customizations'
 import { useAuth } from '../layouts/AuthContext';
+import IconDropdown from '../IconDropdown'
 
 const Setup = () => {
   const navigate = useNavigate();
@@ -59,15 +60,20 @@ const Setup = () => {
         if (isNaN(expenseAmount) || expenseAmount < 0) {
           throw new Error(`Please enter a valid expense for category "${name}".`);
         }
+        let chosenColor = colors[Math.floor(Math.random() * colors.length)];
+        while (categories.some(category => category.color === chosenColor)) {
+          chosenColor = colors[Math.floor(Math.random() * colors.length)];
+        }
+
         return {
           userId: '',
           name: name.trim(),
           amount: budgetAmount,
           percentage: (budgetAmount / totalBudget) * 100,
           expense: expenseAmount,
-          icon: iconMap[iconKey] ? iconKey: 'Home',
+          icon: iconMap[iconKey] ? iconKey : 'Home',
           recommendations: [''],
-          color: colors[Math.floor(Math.random() * colors.length)]
+          color: chosenColor
         };
       });
 
@@ -88,7 +94,7 @@ const Setup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F4EA] p-6">
-      <div className="max-w-2xl w-full bg-white p-8 rounded-3xl shadow-xl backdrop-blur-md">
+      <div className={`w-full bg-white p-8 rounded-3xl shadow-xl backdrop-blur-md ${step === 3 ? 'max-w-4xl' : 'max-w-2xl'}`}>
         {step === 1 && (
           <>
             <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] text-center mb-4">
@@ -139,7 +145,7 @@ const Setup = () => {
 
         {step === 2 && (
           <>
-            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] mb-6 text-center">
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] leading-tight pb-1 mb-6 text-center">
               Step 2: Name Your Budget Categories
             </h2>
             <form className="space-y-4">
@@ -185,59 +191,58 @@ const Setup = () => {
 
         {step === 3 && (
           <>
-            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] mb-6 text-center">
+            <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-[#92BAA4] leading-tight pb-1 mb-6 text-center ">
               Step 3: Set Budgets and Expenses
             </h2>
             <form className="space-y-4" onSubmit={handleFinalSubmit}>
-              <div className="grid grid-cols-[auto_.5fr_1fr_1fr] items-center gap-4 mb-2">
-                <span></span>
-                <span></span>
-                <span className="text-lg text-center font-semibold text-gray-700">Budget</span>
-                <span className="text-lg text-center font-semibold text-gray-700">Expenses</span>
-                <span className="text-center font-semibold">Icon</span>
+              <div className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] items-center gap-4 px-2 mb-2">
+                <span className="text-sm font-semibold text-gray-600">#</span>
+                <span className="text-sm font-semibold text-gray-600">Category</span>
+                <span className="text-sm font-semibold text-gray-600 text-center">Budget</span>
+                <span className="text-sm font-semibold text-gray-600 text-center">Spending</span>
+                <span className="text-sm font-semibold text-gray-600 text-center">Icon</span>
               </div>
 
               {categoryNames.map((name, index) => (
-              <div key={index} className="grid grid-cols-[auto_.5fr_1fr_1fr_1fr] items-center gap-4">
-                <span>{index + 1}.</span>
-                <span>{name}</span>
-                <input
-                  type="number"
-                  value={budgetValues[index] || ''}
-                  onChange={(e) => {
-                    const updated = [...budgetValues];
-                    updated[index] = e.target.value;
-                    setBudgetValues(updated);
-                  }}
-                  className="px-4 py-2 rounded-xl border"
-                  placeholder="Budget"
-                />
-                <input
-                  type="number"
-                  value={expenseValues[index] || ''}
-                  onChange={(e) => {
-                    const updated = [...expenseValues];
-                    updated[index] = e.target.value;
-                    setExpenseValues(updated);
-                  }}
-                  className="px-4 py-2 rounded-xl border"
-                  placeholder="Spending"
-                />
-                <select
-                  value={iconValues[index] || ''}
-                  onChange={(e) => {
-                    const updated = [...iconValues];
-                    updated[index] = e.target.value;
-                    setIconValues(updated);
-                  }}
-                  className="px-2 py-2 rounded-xl border"
-                >
-                  <option value="">Select Icon</option>
-                  {Object.keys(iconMap).map((key) => (
-                    <option key={key} value={key}>{key}</option>
-                  ))}
-                </select>
-              </div>
+                <div key={index} className="grid grid-cols-[40px_1fr_1fr_1fr_1fr] items-center gap-4 px-2">
+                  <span className="text-gray-800">{index + 1}.</span>
+                  <span className="text-gray-800">{name}</span>
+
+                  <input
+                    type="number"
+                    value={budgetValues[index] || ''}
+                    onChange={(e) => {
+                      const updated = [...budgetValues];
+                      updated[index] = e.target.value;
+                      setBudgetValues(updated);
+                    }}
+                    className="px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400"
+                    placeholder="Budget"
+                  />
+
+                  <input
+                    type="number"
+                    value={expenseValues[index] || ''}
+                    onChange={(e) => {
+                      const updated = [...expenseValues];
+                      updated[index] = e.target.value;
+                      setExpenseValues(updated);
+                    }}
+                    className="px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400"
+                    placeholder="Spending"
+                  />
+                  
+                  <IconDropdown
+                    value={iconValues[index] || ''}
+                    onChange={(newIcon) => {
+                      const updated = [...iconValues];
+                      updated[index] = newIcon;
+                      setIconValues(updated);
+                    }}
+                    iconMap={iconMap}
+                  />
+
+                </div>
             ))}
             <div className="flex justify-between mt-6">
               <button type="button" onClick={() => setStep(2)} className="px-6 py-2 bg-gray-300 rounded-xl">Back</button>
