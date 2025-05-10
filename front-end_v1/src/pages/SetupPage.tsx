@@ -4,6 +4,7 @@ import { createBudget } from '../services/apiService';
 import { setTotalBudget } from '../services/apiService';
 import {colors, iconMap} from '../customizations'
 import { useAuth } from '../layouts/AuthContext';
+import IconDropdown from '../IconDropdown'
 
 const Setup = () => {
   const navigate = useNavigate();
@@ -59,15 +60,20 @@ const Setup = () => {
         if (isNaN(expenseAmount) || expenseAmount < 0) {
           throw new Error(`Please enter a valid expense for category "${name}".`);
         }
+        let chosenColor = colors[Math.floor(Math.random() * colors.length)];
+        while (categories.some(category => category.color === chosenColor)) {
+          chosenColor = colors[Math.floor(Math.random() * colors.length)];
+        }
+
         return {
           userId: '',
           name: name.trim(),
           amount: budgetAmount,
           percentage: (budgetAmount / totalBudget) * 100,
           expense: expenseAmount,
-          icon: iconMap[iconKey] ? iconKey: 'Home',
+          icon: iconMap[iconKey] ? iconKey : 'Home',
           recommendations: [''],
-          color: colors[Math.floor(Math.random() * colors.length)]
+          color: chosenColor
         };
       });
 
@@ -225,21 +231,17 @@ const Setup = () => {
                     className="px-4 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-400"
                     placeholder="Spending"
                   />
-
-                  <select
+                  
+                  <IconDropdown
                     value={iconValues[index] || ''}
-                    onChange={(e) => {
+                    onChange={(newIcon) => {
                       const updated = [...iconValues];
-                      updated[index] = e.target.value;
+                      updated[index] = newIcon;
                       setIconValues(updated);
                     }}
-                    className="px-3 py-2 rounded-xl border border-gray-300 bg-white focus:ring-2 focus:ring-green-400"
-                  >
-                    <option value="">Select Icon</option>
-                    {Object.keys(iconMap).map((key) => (
-                      <option key={key} value={key}>{key}</option>
-                    ))}
-                  </select>
+                    iconMap={iconMap}
+                  />
+
                 </div>
             ))}
             <div className="flex justify-between mt-6">
