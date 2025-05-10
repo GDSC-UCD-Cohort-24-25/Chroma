@@ -14,6 +14,7 @@ type AuthContextType = {
   getName: () => string | null;
   getTotal: () => number;
   getEmail: () => string | null;
+  refreshUserInfo: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,6 +25,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [name, setName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const refreshUserInfo = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/checkstatus`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (data.success) {
+        setName(data.name);
+        setEmail(data.email);
+        setTotal(data.total);
+      }
+      else{throw Error('Could not be authenticated');}
+    } catch (err:any) {
+      console.log(err.message || "Failed to refresh user info");
+    }
+  };
   
   const refreshAuth = async () => {
     try {
@@ -35,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsAuthenticated(false);
         console.log('Refresh failed');
       }
-    } catch (err) {
+    } catch (err: any) {
       setIsAuthenticated(false);
       console.log("Refresh failed:", err);
     }
@@ -58,8 +77,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           throw Error('Could not be authenticated');
         }
         setIsAuthenticated(true);
-        setName(data.name || null);
-        setEmail(data.email || null);
+        setName(data.name);
+        setEmail(data.email);
         setTotal(data.total);
       } catch (err: any) {
         console.log(err.message);
@@ -68,7 +87,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } finally {
         console.log('loading');
         setLoading(false);
-        
       }
     };
 
@@ -81,12 +99,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
       setIsAuthenticated(false);
       setName(null);
+      setEmail(null);
   };
   const getName = () => name;
   const getTotal = () => total;
   const getEmail = () => email;
+  
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, name, total, email, login, logout, refreshAuth, getName, getTotal, getEmail}}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, name, total, email, login, logout, refreshAuth, getName, getTotal, getEmail, refreshUserInfo}}>
       {children}
     </AuthContext.Provider>
   );
