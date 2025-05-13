@@ -10,7 +10,7 @@ const generateRecommendations = async(budget) => {
   const colors = ['#A8D5BA', '#FBC4AB', '#FFD6A5', '#B5EAD7', '#C7CEEA', '#FFABAB'];
   budget.color = colors[Math.floor(Math.random() * colors.length)];
 
-  const model = ai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const model = 'gemini-2.0-flash';
   const prompt = `
   You are a smart budgeting assistant. A user has created a budget category:
   - Name: ${budget.name}
@@ -18,17 +18,26 @@ const generateRecommendations = async(budget) => {
   - Percentage of total: ${budget.percentage}%
   - Already spent: ${budget.expense}
   - Location: Davis, CA
-  Give 3 helpful recommendations for managing or optimizing spending in this category. Be practical and specific.`;
+  Give 3 helpful short recommendations without any markdown for managing or optimizing spending in this category. Be practical, specific, and focus on smaller scope. Format the response with each recommendations on a new line.`;
   
   try {
-    const response = await model.generateContent(prompt);
+    const response = await ai.models.generateContent({
+      model: model,
+      contents: prompt,
+      temperature: 0.5,
+      maxOutputTokens: 400,
+      topP: 0.8,
+      topK: 40,
+      stopSequences: ['\n'],
+    });
     const text = response.text;
-    const recommendations = text.split('\n').filter(line => line.trim().startsWith('-')).map(r => r.replace(/^[-•]\s*/, ''));
-    budget,recommendations = recommendations.slice(0, 3); // Max 3
+    console.log("AI response: ", text);
+    const recommendations = text.split('\n');
+    budget.recommendations = recommendations.slice(0, 3); // Max 3
   } catch (error) {
     console.error('Error generating recommendations: ', error.message);
   }
-
+  return budget;
 }
 
 // ALL requests are BY UserID
@@ -46,8 +55,10 @@ export const createBudgets = async (req, res) => {
   try {
     const { name, amount, percentage, expense, icon, color } = req.body;
     const userId = req.user.id;  // req.user is attached in auth middleware
-    const rawbudget = {name, amount, percentage, expense, icon, color};
-    const ripebudget = generateRecommendations(rawbudget);
+    let rawbudget = {name, amount, percentage, expense, icon, color};
+    // console.log("rawBudget: ", rawbudget);
+    const ripebudget = await generateRecommendations(rawbudget);
+    // console.log("ripeBudget: ", ripebudget);
     const budget = await Budget.create({ userId, ...ripebudget });
     res.status(201).json({ success: true, data: budget, message: "Budget created successfully" });
   } catch (error) {
