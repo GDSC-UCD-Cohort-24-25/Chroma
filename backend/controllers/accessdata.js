@@ -1,6 +1,35 @@
 // do RESTAPI on db
 import Budget from "../models/Budget.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
+import { GoogleGenAI } from "@google/genai";
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+
+const generateRecommendations = async(budget) => {
+  const colors = ['#A8D5BA', '#FBC4AB', '#FFD6A5', '#B5EAD7', '#C7CEEA', '#FFABAB'];
+  budget.color = colors[Math.floor(Math.random() * colors.length)];
+
+  const model = ai.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const prompt = `
+  You are a smart budgeting assistant. A user has created a budget category:
+  - Name: ${budget.name}
+  - Amount: ${budget.amount}
+  - Percentage of total: ${budget.percentage}%
+  - Already spent: ${budget.expense}
+  - Location: Davis, CA
+  Give 3 helpful recommendations for managing or optimizing spending in this category. Be practical and specific.`;
+  
+  try {
+    const response = await model.generateContent(prompt);
+    const text = response.text;
+    const recommendations = text.split('\n').filter(line => line.trim().startsWith('-')).map(r => r.replace(/^[-•]\s*/, ''));
+    budget,recommendations = recommendations.slice(0, 3); // Max 3
+  } catch (error) {
+    console.error('Error generating recommendations: ', error.message);
+  }
+
+}
 
 // ALL requests are BY UserID
 export const getBudgets = async (req, res) => {
@@ -83,8 +112,4 @@ export const deleteBudgets = async (req, res) => {
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
-}
-
-const generateRecommendations = (budget) => {
-
 }
