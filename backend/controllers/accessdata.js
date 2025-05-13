@@ -40,6 +40,16 @@ const generateRecommendations = async(budget) => {
   return budget;
 }
 
+export const gernerateAPI = async (req, res) => {
+  try {
+    let rawbudget = req.body;
+    const ripebudget = await generateRecommendations(rawbudget);
+    res.status(200).json({ success: true, data: ripebudget, message: "Successfully generated recommendations" });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+}
+
 // ALL requests are BY UserID
 export const getBudgets = async (req, res) => {
   try {
