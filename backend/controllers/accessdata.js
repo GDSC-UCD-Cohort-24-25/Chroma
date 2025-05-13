@@ -88,12 +88,15 @@ export const updateBudgets = async (req, res) => {
     if (req.body.percentage) updates.percentage = req.body.percentage;
     if (req.body.expense) updates.expense = req.body.expense;
     if (req.body.icon) updates.icon = req.body.icon;
-    if (req.body.recommendations) updates.recommendations = req.body.recommendations;
+    // if (req.body.recommendations) updates.recommendations = req.body.recommendations;
     if (req.body.color) updates.color = req.body.color;
+
+    const updatedBudget = { ...existingBudget.toObject(), ...updates };
+    const ripebudget = await generateRecommendations(updatedBudget);
 
     const budget = await Budget.findByIdAndUpdate(
       id, 
-      updates,
+      ripebudget,
       { new: true }
     );
 
