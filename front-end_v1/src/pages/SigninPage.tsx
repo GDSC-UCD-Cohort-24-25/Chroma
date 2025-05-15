@@ -21,7 +21,7 @@ const SignIn = () => {
             console.log('API Response:', res);
             login();
             console.log('navigate to dashboard');
-            await new Promise((res) => setTimeout(res, 400)); // delay for loadingscreen
+            await new Promise((res) => setTimeout(res, 500)); // delay for loadingscreen
             navigate('/budget');
           
         } catch (error: any) {
