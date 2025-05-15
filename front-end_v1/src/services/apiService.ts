@@ -245,3 +245,27 @@ export const deleteBudget = async (budgetId: string) => {
     }
 }
 
+export const getRecommendations = async (
+    bucket: {
+        name: string;
+        amount: number;
+        percentage: number;
+        expense: number;
+}) => {
+    try {
+        const res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(bucket),
+        });
+        const data = await res.json();
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to delete budget.');
+        }
+        return data;
+    }catch (error: any) {
+        console.error('Could not post recomendations: ', error.message); // Debug
+    }
+  
+};

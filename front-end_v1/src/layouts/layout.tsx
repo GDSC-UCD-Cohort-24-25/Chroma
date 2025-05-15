@@ -26,19 +26,24 @@ function Layout({ children }: { children: ReactNode }) {
         style={{ backgroundColor: '#7DAE94' }}>
       
       {/* Top Section */}
-      <div>
-        <div className="flex items-center justify-between">
-          {open && 
-          <span className="text-2xl font-bold text-white">
-            CowCulator
-          </span>}
-          <button onClick={() => setOpen(!open)} className={`text-white ${open ? '' : 'items-center mx-auto'}`}>
-            {open ? <GrClose size={22} /> : <GiHamburgerMenu size={26} />}
-          </button>
-        </div>
+      <div className='fixed'> 
+        <nav className={`md-10 space-y-4 ${open ? '' : 'items-center mx-auto'}`}>
+            <div className=" flex items-center justify-between mb-8">
+              {open && 
+              <span className="text-2xl font-bold text-white">
+                CowCulator
+              </span>}
+              
+              <button onClick={() => setOpen(!open)} className={`ml-5 text-white hover:text-white/90 focus:outline-none ${open ? '' : 'ml-auto'}`}>
+                {open ? <GrClose size={24} /> : <GiHamburgerMenu size={26}/>}
+              </button>
+            </div>
 
-        <nav className={`mt-10 space-y-4 ${open ? '' : 'items-center mx-auto'}`}>
-          <Link to="/" className="flex items-center gap-3 text-white hover:text-white/90 text-lg">
+          <Link 
+            to="/" 
+            className={`flex items-center gap-3 text-white hover:text-white/90 text-lg ${
+              location.pathname === '/' ? 'font-semibold' : ''
+            }`}>
             <MdHome size={30} />
             {open && <span >Home</span>}
           </Link>
@@ -46,7 +51,9 @@ function Layout({ children }: { children: ReactNode }) {
           {showDashboardLink && (
             <Link
               to="/budget"
-              className="flex items-center gap-3 text-white hover:text-white/90 text-lg"
+              className={`flex items-center gap-3 text-white hover:text-white/90 text-lg ${
+                location.pathname === '/budget' ? 'font-semibold' : ''
+              }`}
             >
               <MdDashboard size={30} />
               {open && <span>Dashboard</span>}
@@ -55,7 +62,9 @@ function Layout({ children }: { children: ReactNode }) {
           {showDashboardLink && (
           <Link
                 to="/profile"
-              className="flex items-center gap-3 text-white hover:text-white/90 text-lg"
+              className={`flex items-center gap-3 text-white hover:text-white/90 text-lg ${
+                location.pathname === '/profile' ? 'font-semibold' : ''
+              }`}
               >
                 <MdPerson size={30} />
                 {open && <span >Profile</span>}
@@ -67,13 +76,15 @@ function Layout({ children }: { children: ReactNode }) {
       </div> 
       {/* Bottom Section */}
       {isAuthenticated && (
-      <button
-        onClick={handleLogout} className={`flex items-center gap-3 text-white hover:text-white/90 text-lg ${open ? '' : 'mx-auto'}`}
-      >
-        <MdLogout size={30} />
-        {open && <span>Logout</span>}
-      </button>)}
-
+      <div className='fixed bottom-2'>
+        <button
+          onClick={handleLogout} className={`flex items-center gap-3 text-white hover:text-white/90 text-lg mb-2 ${open ? '' : ' mx-auto'}`}
+        >
+          <MdLogout size={30} />
+          {open && <span>Logout</span>}
+        </button>
+      </div>
+      )}
       </aside>
 
       {/* Main Content */}

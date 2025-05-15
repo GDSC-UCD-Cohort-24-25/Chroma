@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createBudget } from '../services/apiService';
-import { setTotalBudget } from '../services/apiService';
+import { createBudget, setTotalBudget , getRecommendations} from '../services/apiService';
 import {colors, iconMap} from '../customizations'
 import { useAuth } from '../layouts/AuthContext';
 import IconDropdown from '../IconDropdown'
@@ -50,7 +49,13 @@ const Setup = () => {
       else if (categoryNames.length === 0) {
         throw new Error('Please enter at least one budget category.');
       }
-      const categories = categoryNames.map((name, index) => {
+
+      await setTotalBudget(totalBudget); // Save total budget
+      console.log('Total budget created successfully:', totalBudget);
+
+    // Generate all categories with recommendations
+      const categories = await Promise.all(
+        categoryNames.map(async (name, index) => {
         const budgetAmount = parseFloat(budgetValues[index] || '0');
         const expenseAmount = parseFloat(expenseValues[index] || '0');
         const iconKey = iconValues[index];
@@ -61,24 +66,32 @@ const Setup = () => {
           throw new Error(`Please enter a valid expense for category "${name}".`);
         }
         let chosenColor = colors[Math.floor(Math.random() * colors.length)];
-        while (categories.some(category => category.color === chosenColor)) {
+        while (index > 0 &&
+          categoryNames.slice(0, index).some((_, i) => colors[i] === chosenColor)
+        ) {
           chosenColor = colors[Math.floor(Math.random() * colors.length)];
         }
 
-        return {
-          userId: '',
-          name: name.trim(),
-          amount: budgetAmount,
-          percentage: (budgetAmount / totalBudget) * 100,
-          expense: expenseAmount,
-          icon: iconMap[iconKey] ? iconKey : 'Home',
-          recommendations: [''],
-          color: chosenColor
-        };
-      });
+          const recs = await getRecommendations({
+            name: name,
+            amount: budgetAmount,
+            percentage: (budgetAmount / totalBudget) * 100,
+            expense: expenseAmount,
+          });
 
-      await setTotalBudget(totalBudget); //total budget
-      console.log('Total budget created successfully:', totalBudget);
+          return {
+            userId: '',
+            name: name.trim(),
+            amount: budgetAmount,
+            percentage: (budgetAmount / totalBudget) * 100,
+            expense: expenseAmount,
+            icon: iconMap[iconKey] ? iconKey : 'Home',
+            recommendations: recs,
+            color: chosenColor
+          };
+        })
+      );
+
       for (const category of categories) {
         await createBudget(category); // each budget category
       }
