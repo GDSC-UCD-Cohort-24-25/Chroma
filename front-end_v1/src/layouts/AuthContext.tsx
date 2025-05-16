@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setTotal(data.total);
       } catch (err: any) {
         console.log(err.message);
-        await refreshAuth();
         
       } finally {
         console.log('loading');
