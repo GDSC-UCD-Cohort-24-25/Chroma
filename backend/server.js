@@ -9,7 +9,7 @@ import userRoutes from './routes/router.js';
 const PORT = process.env.NodeJS_PORT || 3000;
 
 const corsOptions = {
-    origin: 'https://aggiepantry.org',  // Replace with your frontend URL
+    origin: ['https://aggiepantry.org', 'http://aggiepantry.org'],  // Allow both HTTP and HTTPS
     credentials: true,  // Allow cookies to be sent
 };
 
