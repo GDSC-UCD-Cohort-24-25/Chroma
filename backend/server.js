@@ -23,6 +23,13 @@ const corsOptions = {
 };
 
 const app = express();
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "https://aggiepantry.org");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+}
+);
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());// enable cookie parser
