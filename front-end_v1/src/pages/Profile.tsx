@@ -1,16 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Settings, DollarSign, PieChart } from 'lucide-react';
+import {useAuth} from '../layouts/AuthContext'
 
 export default function ProfilePage() {
+  const { getName, getEmail } = useAuth();
   const user = {
-    name: 'Jane Doe',
+    name:  'Jane Doe' ,
     email: 'jane.doe@example.com',
     categories: [
       { name: 'Change Name'},
       { name: 'Change Email',},
       { name: 'Change Password',},
-      { name: 'Sign out',},
     ],
 
   };
@@ -29,15 +30,15 @@ export default function ProfilePage() {
 
  
       <div className=" flex items-center justify-center mb-8">
-        <h1 className="text-3xl font-semibold">Welcome, {user.name}!</h1>
+        <h1 className="text-3xl font-semibold">Welcome, {getName()}!</h1>
       </div>
 
 
       <div className=" bg-[#DEE9DC] flex items-center rounded-2xl space-x-4 mb-8 p-4 border border-gray-200 rounded">
 
         <div>
-          <h2 className="text-xl font-medium">{user.name}</h2>
-          <p className="text-gray-600">{user.email}</p>
+          <h2 className="text-xl font-medium">{getName()}</h2>
+          <p className="text-gray-600">{getEmail()}</p>
 
         </div>
       </div>

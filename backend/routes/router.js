@@ -1,6 +1,6 @@
 import express from 'express';
 import { register, login, refresh, logout, checkstatus, setTotal, getTotal } from '../controllers/user_auth.js';
-import { getBudgets, createBudgets, updateBudgets, deleteBudgets } from '../controllers/accessdata.js';
+import { getBudgets, createBudgets, updateBudgets, deleteBudgets, gernerateAPI } from '../controllers/accessdata.js';
 import { auth } from '../middleware/auth.js';
 const router = express.Router();
 
@@ -16,6 +16,7 @@ router.get('/api/gettotal', auth, getTotal);
 
 
 // /budgets  (protected)
+router.post('/api/generate', auth, gernerateAPI); // Generate recommendations API
 router.get('/api/budgets', auth, getBudgets);
 router.post('/api/budgets', auth, createBudgets);
 router.put('/api/budgets/:id', auth, updateBudgets);
