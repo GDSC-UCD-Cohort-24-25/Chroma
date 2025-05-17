@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-const API_BASE_URL = 'https://chromaserver.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 console.log('VITE_BASE_URL:', API_BASE_URL);
 import {refreshPage} from '../services/apiService'
 
