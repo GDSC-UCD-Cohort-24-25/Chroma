@@ -7,7 +7,7 @@ import { connectDB } from './config/db.js';
 import userRoutes from './routes/router.js';
 
 const PORT = process.env.NodeJS_PORT || 3000;
-const allowedOrigins = ['https://aggiepantry.org', 'http://aggiepantry.org'];
+const allowedOrigins = ['https://cowculatorv2.vercel.app/'];
 const corsOptions = {
     origin: function (origin, callback) {
         // allow requests with no origin
@@ -24,7 +24,7 @@ const corsOptions = {
 
 const app = express();
 app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://aggiepantry.org');
+  res.setHeader('Access-Control-Allow-Origin', 'https://cowculatorv2.vercel.app/');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.sendStatus(200);
