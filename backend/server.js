@@ -24,7 +24,7 @@ const corsOptions = {
 
 const app = express();
 app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://cowculatorv2.vercel.app/');
+  res.setHeader('Access-Control-Allow-Origin', 'https://cowculatortest.vercel.app/');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.sendStatus(200);
