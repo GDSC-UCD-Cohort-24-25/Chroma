@@ -1,4 +1,6 @@
-# Chroma
+# Team Chroma's project: Cowculator
+
+link: https://cowculatorv2-ruby.vercel.app
 
 ## Frontend:
 ### Add this command to local machine to install vite 

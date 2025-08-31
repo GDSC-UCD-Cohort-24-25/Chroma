@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/apiService';
 import { useAuth } from '../layouts/AuthContext';
+import logo from '../assets/logo.png';
 
 const SignUp = () => {
     const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ const SignUp = () => {
         {/* Left Side: Logo */}
         <div className="w-1/2 flex justify-center">
             <img
-                src="/assets/logo.png"
+                src={logo}
                 alt="Cow Budget"
                 className="max-w-full h-auto rounded-xl"
             />

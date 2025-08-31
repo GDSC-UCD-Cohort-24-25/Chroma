@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const LandingPage = () => {
   return (
@@ -10,7 +11,7 @@ const LandingPage = () => {
         {/* Left Side: Image */}
         <div className="w-1/2 flex justify-center">
           <img
-            src="/assets/logo.png" 
+            src={logo} 
             alt="Cow Budget"
             className="max-w-full h-auto rounded-xl"
           />

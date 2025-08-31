@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL|| 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 console.log('VITE_BASE_URL:', API_BASE_URL);
 
 export const registerUser = async (email: string, password: string, name: string) => {
@@ -245,3 +245,27 @@ export const deleteBudget = async (budgetId: string) => {
     }
 }
 
+export const getRecommendations = async (
+    bucket: {
+        name: string;
+        amount: number;
+        percentage: number;
+        expense: number;
+}) => {
+    try {
+        const res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(bucket),
+        });
+        const data = await res.json();
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to delete budget.');
+        }
+        return data;
+    }catch (error: any) {
+        console.error('Could not post recomendations: ', error.message); // Debug
+    }
+  
+};
